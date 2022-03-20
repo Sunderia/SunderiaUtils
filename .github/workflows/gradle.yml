@@ -18,11 +18,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
       - name: Set gradlew executable
         run: chmod +x gradlew
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: build
       - name: Generate Build tools

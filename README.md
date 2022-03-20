@@ -20,3 +20,5 @@ dependencies {
 }
 
 ```
+
+### [JavaDoc](https://jitpack.io/com/github/Sunderia/SunderiaUtils/1.0/javadoc/)
