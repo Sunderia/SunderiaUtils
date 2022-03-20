@@ -1,0 +1,88 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+apply from: rootProject.file('specialSource.gradle')
+
+group 'fr.sunderia'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "Spigot-Repo"
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+}
+
+dependencies {
+    compileOnly('org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT')
+    compileOnly('org.spigotmc:spigot:1.18.1-R0.1-SNAPSHOT:remapped-mojang')
+    implementation('org.jetbrains:annotations:23.0.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+afterEvaluate {
+    jar {
+        doLast {
+            def outputFiles = outputs.files.files
+            for (inputFile in outputFiles) {
+                File intermediateFile = new File(temporaryDir, inputFile.name.replace('.jar', '-obf.jar'))
+                File outputFile = inputFile
+                remapMojangToSpigot(inputFile, intermediateFile, outputFile, "1.18.1-R0.1-SNAPSHOT")
+            }
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+javadoc {
+    options.addBooleanOption('html5', true)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.name
+            from components.java
+            pom {
+                name = project.name
+                description = project.description
+                url = "https://github.com/Sunderia/SunderiaUtils"
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'minemobs'
+                        name = 'minemobs'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name 'sunderiaRepo'
+            def extension = version.toString().endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'
+            url 'https://maven.galaxyfight.fr/' + extension
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+}
