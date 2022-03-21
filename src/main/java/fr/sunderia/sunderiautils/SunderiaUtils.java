@@ -3,6 +3,7 @@ package fr.sunderia.sunderiautils;
 import com.google.common.reflect.ClassPath;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import org.apache.commons.lang3.ClassUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
@@ -38,6 +39,11 @@ public class SunderiaUtils {
         }
     }
 
+    /**
+     * Register every commands in the package
+     * @param packageName The name of the package
+     * @throws IOException If it can't read the classes in the package
+     */
     public static void registerCommands(String packageName) throws IOException {
         tryToFindThePlugin();
         if(plugin == null) {
@@ -56,6 +62,12 @@ public class SunderiaUtils {
                 });
     }
 
+    /**
+     * Register every listeners in the package.
+     * It will skip every classes that does not have a constructor with no parameters.
+     * @param packageName The name of the package
+     * @throws IOException If it can't read the classes in the package
+     */
     public static void registerListeners(String packageName) throws IOException {
         tryToFindThePlugin();
         if(plugin == null) {
@@ -66,11 +78,22 @@ public class SunderiaUtils {
                 .stream()
                 .map(ClassPath.ClassInfo::load)
                 .filter(clazz -> clazz.isAssignableFrom(Listener.class))
+                .filter(clazz -> {
+                    try {
+                        clazz.getConstructor();
+                        return true;
+                    } catch (NoSuchMethodException e) {
+                        return false;
+                    }
+                })
                 .forEach(clazz -> {
                     LOGGER.info("Registering command " + clazz.getAnnotation(CommandInfo.class).name());
-                    PluginCommand command = Objects.requireNonNull((PluginCommand) newInstance(clazz));
-                    SimpleCommandMap map = ((CraftServer) plugin.getServer()).getCommandMap();
-                    map.register(plugin.getDescription().getName(), command);
+                    try {
+                        Bukkit.getPluginManager().registerEvents((Listener) clazz.getConstructor().newInstance(), plugin);
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
     }
 
@@ -106,18 +129,23 @@ public class SunderiaUtils {
     /**
      * Please call this method in the onEnable method of your plugin.
      * If you try to use any other method of this module it will throw a {@link NullPointerException} because the {@link SunderiaUtils#plugin} is null.
+     * @param plugin Your plugin
+     * @return An instance of {@link SunderiaUtils}
      */
     public static SunderiaUtils of(JavaPlugin plugin) {
         return new SunderiaUtils(plugin);
     }
 
+    /**
+     * @return An instance of a plugin.
+     */
     public static JavaPlugin getPlugin() {
         if(plugin == null) {
             new IllegalStateException("Plugin is null").printStackTrace();
         }
         try {
             findPlugin().ifPresentOrElse(pl -> plugin = pl, () -> {
-                throw new IllegalStateException("Plugin is null and it can't be found 'cause I'm lazy to write a good method to find it.");
+                throw new IllegalStateException("Plugin is null and it can't be found because I'm lazy to write a good method to find it.");
             });
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -148,6 +176,9 @@ public class SunderiaUtils {
         return Optional.empty();
     }
 
+    /**
+     * This method tries to find the plugin that called a method of this module.
+     */
     public static void tryToFindThePlugin() {
         if(plugin != null) return;
         Arrays.stream(Thread.currentThread().getStackTrace()).filter(e -> getClassByName(e.getClassName(), JavaPlugin.class) != null)
@@ -162,6 +193,9 @@ public class SunderiaUtils {
                 });
     }
 
+    /**
+     * @return The instance of {@link Random}
+     */
     public static Random getRandom() {
         return random;
     }

@@ -13,8 +13,16 @@ public class ItemStackUtils {
 
     private ItemStackUtils() {}
 
+    /**
+     * An instance of {@link ItemStack} that contains {@link Material#AIR AIR}
+     */
     public static final ItemStack EMPTY = new ItemStack(Material.AIR);
 
+    /**
+     * This method check if the item is an armor.
+     * @param is The item to check
+     * @return {@code true} if the item is an armor
+     */
     public static boolean isAnArmor(ItemStack is) {
         return is.getType().name().endsWith("_HELMET") || is.getType().name().endsWith("_CHESTPLATE") || is.getType().name().endsWith("_LEGGINGS") ||
                 is.getType().name().endsWith("_BOOTS");
@@ -25,7 +33,7 @@ public class ItemStackUtils {
      * This method only works on custom items.
      * @param first The first item
      * @param second The second item
-     * @return true if the two items are the same
+     * @return {@code true} if the two items are the same
      */
     public static boolean isSameItem(ItemStack first, ItemStack second) {
         if(!hasLore(first) || !hasLore(second)) return false;
@@ -38,24 +46,43 @@ public class ItemStackUtils {
         return lore.equals(lore2);
     }
 
+    /**
+     * @param item The item to check
+     * @return {@code true} if the item is an air or null
+     */
     public static boolean isAirOrNull(ItemStack item){
         return item == null || item.getType().isAir();
     }
 
+    /**
+     * @param is The item to check
+     * @return {@code true} if the item is not null and not air.
+     * @see #isAirOrNull(ItemStack)
+     */
     public static boolean isNotAirNorNull(ItemStack is) {
         return !isAirOrNull(is);
     }
 
+    /**
+     * @param is The item to check
+     * @return {@code true} if the item has lore
+     */
     public static boolean hasLore(ItemStack is) {
         return !isAirOrNull(is) && is.hasItemMeta() && is.getItemMeta().hasLore();
     }
 
+    /**
+     * @return A random banner.
+     */
     public static Material randomBanner() {
         List<Material> banners = Arrays.stream(Material.values()).filter(banner -> banner.name().endsWith("_BANNER") && !banner.name().endsWith("_WALL_BANNER") &&
                 !banner.name().startsWith("LEGACY")).toList();
         return banners.get(SunderiaUtils.getRandom().nextInt(banners.size()));
     }
 
+    /**
+     * @return A random skull like {@link Material#SKELETON_SKULL}.
+     */
     public static Material randomSkull() {
         List<Material> skulls = Arrays.stream(Material.values()).filter(material -> (!material.name().startsWith("PISTON") && material.name().endsWith("_HEAD") && !material.name().endsWith("_WALL_HEAD")) ||
                 (material.name().endsWith("_SKULL") && !material.name().startsWith("LEGACY") && !material.name().endsWith("_WALL_SKULL"))).toList();

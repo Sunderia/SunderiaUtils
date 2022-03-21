@@ -15,6 +15,10 @@ public abstract class PluginCommand extends BukkitCommand {
     private final CommandInfo info;
     protected final JavaPlugin plugin;
 
+    /**
+     * This constructor is used to register the command and check if the command has the correct annotation.
+     * @param plugin An instance of the plugin.
+     */
     protected PluginCommand(JavaPlugin plugin) {
         super("");
         this.plugin = plugin;
@@ -28,6 +32,9 @@ public abstract class PluginCommand extends BukkitCommand {
         setPermissionMessage(info.permissionMessage());
     }
 
+    /**
+     * @return The annotation of this command.
+     */
     public CommandInfo getInfo() {
         return info;
     }
@@ -50,6 +57,11 @@ public abstract class PluginCommand extends BukkitCommand {
         return true;
     }
 
+    /**
+     * @param args An array of arguments passed by the command sender
+     * @param index The index of the argument to get.
+     * @return The argument at the given index, or an empty optional if the index is out of bounds.
+     */
     protected Optional<String> getArg(String[] args, int index) {
         if(args.length > index) {
             return Optional.of(args[index]);
@@ -57,6 +69,17 @@ public abstract class PluginCommand extends BukkitCommand {
         return Optional.empty();
     }
 
+    /**
+     * This method is called when the command is executed by a player.
+     * @param player The player who executed the command.
+     * @param args The arguments passed by the player.
+     */
     public void onCommand(Player player, String[] args) {}
+
+    /**
+     * This method is called when the command is executed by a non-player.
+     * @param sender The sender who executed the command.
+     * @param args The arguments passed by the sender.
+     */
     public void onCommand(CommandSender sender, String[] args) {}
 }
