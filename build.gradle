@@ -14,6 +14,7 @@ repositories {
         name = "Spigot-Repo"
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
+    mavenLocal()
 }
 
 dependencies {
