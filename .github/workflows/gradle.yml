@@ -24,12 +24,15 @@ jobs:
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
-            path: |
-              ~/.gradle/caches
-              ~/.gradle/wrapper
-            key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-            restore-keys: |
-              ${{ runner.os }}-gradle-
+          path: |
+            ~/.m2/repository
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Run BuildTools
+        run: wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar && java -jar BuildTools.jar --rev 1.18.1 --compile-if-changed
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
