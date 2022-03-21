@@ -41,5 +41,5 @@ task runBuildTools(type: Exec) {
     def workingDirectory = new File(buildToolsFolder, version)
     workingDirectory.mkdirs()
     setWorkingDir(workingDirectory.absolutePath)
-    commandLine "java", '-jar', "${downloadFolder.absolutePath}/BuildTools.jar", '--compile-if-changed', "--rev", version
+    commandLine "java", '-jar', "${downloadFolder.absolutePath}/BuildTools.jar", '--remapped', '--compile-if-changed', "--rev", version
 }

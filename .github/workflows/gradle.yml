@@ -32,7 +32,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run BuildTools
-        run: wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar && java -jar BuildTools.jar --rev 1.18.1 --compile-if-changed
+        uses: SpraxDev/Action-SpigotMC@v4
+        with:
+          version: '1.18.1'
+          remapped: true
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
