@@ -1,0 +1,45 @@
+import groovy.json.JsonSlurper
+
+def buildToolsFolder = new File(project.buildDir, "buildtools")
+def downloadFolder = new File(buildToolsFolder, "download")
+def version = '1.18.1'
+
+def getVersions() {
+    List<String> versionList = new ArrayList<>()
+    Map versions = new JsonSlurper().parse(new URL('https://launchermeta.mojang.com/mc/game/version_manifest.json'))
+    for(def versionObj : versions.versions) {
+        if(versionObj.type == 'release') {
+            versionList.add(versionObj.id)
+        }
+    }
+    return versionList
+}
+
+task checkVersion() {
+    def versionList = getVersions()
+    if(!versionList.contains(version)) {
+        version = 'latest'
+        println "Version ${version} is not available. Using latest version latest instead."
+    }
+}
+
+task downloadBuildTools(type: Download) {
+    dependsOn(checkVersion)
+    downloadFolder.mkdirs()
+    src 'https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar'
+    dest downloadFolder
+    onlyIfModified true
+}
+
+task cleanBuildTools(type: Delete) {
+    file(downloadFolder).delete()
+}
+
+task runBuildTools(type: Exec) {
+    dependsOn(downloadBuildTools)
+    finalizedBy(cleanBuildTools)
+    def workingDirectory = new File(buildToolsFolder, version)
+    workingDirectory.mkdirs()
+    setWorkingDir(workingDirectory.absolutePath)
+    commandLine "java", '-jar', "${downloadFolder.absolutePath}/BuildTools.jar", '--compile-if-changed', "--rev", version
+}
