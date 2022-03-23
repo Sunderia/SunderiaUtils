@@ -50,8 +50,8 @@ public class Cooldown {
     }
 
     /**
-     * @param id
-     * @param cooldownName
+     * @param id The player's UUID {@link org.bukkit.entity.Player#getUniqueId()}
+     * @param cooldownName The name of the cooldown
      * @return An instance of {@link Cooldown} from {@link Cooldown#cooldowns}
      * @throws NullPointerException if the cooldown doesn't exist
      */

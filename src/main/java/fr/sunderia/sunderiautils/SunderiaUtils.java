@@ -2,6 +2,8 @@ package fr.sunderia.sunderiautils;
 
 import com.google.common.reflect.ClassPath;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
+import fr.sunderia.sunderiautils.listeners.PlayerListener;
+import fr.sunderia.sunderiautils.listeners.RecipeListener;
 import org.apache.commons.lang3.ClassUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -37,6 +39,8 @@ public class SunderiaUtils {
         } catch (NoSuchAlgorithmException e) {
             random = new Random();
         }
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), plugin);
+        Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
     }
 
     /**
@@ -87,7 +91,7 @@ public class SunderiaUtils {
                     }
                 })
                 .forEach(clazz -> {
-                    LOGGER.info("Registering command " + clazz.getAnnotation(CommandInfo.class).name());
+                    LOGGER.info("Registering command {}", clazz.getAnnotation(CommandInfo.class).name());
                     try {
                         Bukkit.getPluginManager().registerEvents((Listener) clazz.getConstructor().newInstance(), plugin);
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException |

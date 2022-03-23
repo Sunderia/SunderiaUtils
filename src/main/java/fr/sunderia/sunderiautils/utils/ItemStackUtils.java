@@ -29,6 +29,16 @@ public class ItemStackUtils {
     }
 
     /**
+     * This method check if the iteam is a tool or a weapon.
+     * @param mat The material to check
+     * @return {@code true} if the material is a tool or a weapon.
+     */
+    public static boolean isToolOrWeapon(Material mat) {
+        return mat.name().endsWith("_SWORD") || mat.name().endsWith("_PICKAXE") || mat.name().endsWith("_AXE") || mat.name().endsWith("_HOE") ||
+                mat.name().endsWith("_SHOVEL");
+    }
+
+    /**
      * This method use the lore to check if both items have the same name.
      * This method only works on custom items.
      * @param first The first item
