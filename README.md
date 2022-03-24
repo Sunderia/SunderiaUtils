@@ -1,10 +1,30 @@
 # Sunderia Utils
 Utility classes
 
+---
+
+## Example
+
+```java
+public class ExamplePlugin extends JavaPlugin {
+    
+    @Override
+    public void onLoad() {
+        SunderiaUtils.of(this);
+    }
+    
+    @Override
+    public void onEnable() {
+        //Register commands
+        SunderiaUtils.registerCommands("com.example.commands");
+    }
+}
+```
+
+---
 
 ## Download
 
----
 
 ```groovy
 repositories {
