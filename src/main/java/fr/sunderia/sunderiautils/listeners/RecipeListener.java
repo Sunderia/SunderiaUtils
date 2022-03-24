@@ -3,6 +3,7 @@ package fr.sunderia.sunderiautils.listeners;
 import fr.sunderia.sunderiautils.recipes.AnvilCrushRecipe;
 import fr.sunderia.sunderiautils.recipes.AnvilRecipe;
 import fr.sunderia.sunderiautils.utils.ItemStackUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.FallingBlock;
@@ -43,7 +44,7 @@ public class RecipeListener implements Listener {
         if(!(event.getEntity() instanceof FallingBlock block) || !block.getBlockData().getMaterial().toString().endsWith("ANVIL")) return;
         Block b = block.getWorld().getBlockAt(block.getLocation().clone().subtract(0, 1, 0));
         if(b.isEmpty() || b.isLiquid() || b.isPassable()) return;
-        AnvilCrushRecipe.getRecipes().stream().filter(recipe -> recipe != null && recipe.getBase() == b.getType()).findFirst().ifPresent(recipe -> {
+        AnvilCrushRecipe.getRecipesAsList().stream().filter(recipe -> recipe != null && recipe.getBase() == b.getType()).findFirst().ifPresent(recipe -> {
             b.setType(Material.AIR);
             block.getWorld().dropItemNaturally(b.getLocation(), recipe.getResult());
         });

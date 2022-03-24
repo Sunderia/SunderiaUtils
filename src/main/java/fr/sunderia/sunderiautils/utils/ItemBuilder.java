@@ -67,14 +67,13 @@ public class ItemBuilder implements Listener {
 
     /**
      * This method add a enchantment depending on the item.
-     * For exemple if the item is an armor it will add {@link Enchantment#ARROW_KNOCKBACK} else it will add {@link Enchantment#PROTECTION_EXPLOSIONS}.
+     * For example if the item is an armor it will add {@link Enchantment#ARROW_KNOCKBACK} else it will add {@link Enchantment#PROTECTION_EXPLOSIONS}.
      * @param glow If the item should glow
      * @return The ItemBuilder
      */
     public ItemBuilder setGlow(boolean glow) {
         if(glow) {
-            if(ItemStackUtils.isAnArmor(stack)) addEnchant(Enchantment.ARROW_KNOCKBACK, 1);
-            else addEnchant(Enchantment.PROTECTION_EXPLOSIONS, 1);
+            addEnchant(ItemStackUtils.isAnArmor(stack) ? Enchantment.ARROW_KNOCKBACK : Enchantment.PROTECTION_EXPLOSIONS, 1);
             addItemFlag(ItemFlag.HIDE_ENCHANTS);
         } else {
             ItemMeta meta = getItemMeta();

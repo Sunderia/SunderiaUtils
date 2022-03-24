@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.NoSuchAlgorithmException;
@@ -64,6 +66,24 @@ public class SunderiaUtils {
                     SimpleCommandMap map = ((CraftServer) plugin.getServer()).getCommandMap();
                     map.register(plugin.getDescription().getName(), command);
                 });
+    }
+
+    /**
+     * Register {@link Enchantment enchantments}.
+     * @param enchantments An array of {@link Enchantment enchantments}
+     * @throws RuntimeException if the {@link Enchantment} can't be registered
+     */
+    public static void registerEnchantments(Enchantment... enchantments) {
+        Arrays.stream(enchantments).forEach(ench -> {
+            try {
+                Field f = Enchantment.class.getDeclaredField("acceptingNew");
+                f.setAccessible(true);
+                f.set(null, true);
+                Enchantment.registerEnchantment(ench);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**

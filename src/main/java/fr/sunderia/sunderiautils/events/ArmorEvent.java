@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+
 public class ArmorEvent extends PlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
