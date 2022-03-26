@@ -2,11 +2,11 @@ package fr.sunderia.sunderiautils;
 
 import com.google.common.reflect.ClassPath;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
+import fr.sunderia.sunderiautils.commands.PluginCommand;
 import fr.sunderia.sunderiautils.listeners.PlayerListener;
 import fr.sunderia.sunderiautils.listeners.RecipeListener;
 import org.apache.commons.lang3.ClassUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
 import org.bukkit.enchantments.Enchantment;
@@ -62,7 +62,7 @@ public class SunderiaUtils {
                 .filter(clazz -> clazz.isAnnotationPresent(CommandInfo.class))
                 .forEach(clazz -> {
                     LOGGER.info("Registering command {}", clazz.getAnnotation(CommandInfo.class).name());
-                    PluginCommand command = Objects.requireNonNull((PluginCommand) newInstance(clazz));
+                    PluginCommand command = Objects.requireNonNull((PluginCommand) newInstance(clazz, true));
                     SimpleCommandMap map = ((CraftServer) plugin.getServer()).getCommandMap();
                     map.register(plugin.getDescription().getName(), command);
                 });
@@ -111,13 +111,8 @@ public class SunderiaUtils {
                     }
                 })
                 .forEach(clazz -> {
-                    LOGGER.info("Registering command {}", clazz.getAnnotation(CommandInfo.class).name());
-                    try {
-                        Bukkit.getPluginManager().registerEvents((Listener) clazz.getConstructor().newInstance(), plugin);
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException e) {
-                        throw new RuntimeException(e);
-                    }
+                    LOGGER.info("Registering listener {}", clazz.getAnnotation(CommandInfo.class).name());
+                    Bukkit.getPluginManager().registerEvents((Listener) Objects.requireNonNull(newInstance(clazz, false)), plugin);
                 });
     }
 
@@ -141,9 +136,11 @@ public class SunderiaUtils {
         }
     }
 
-    private static Object newInstance(Class<?> clazz) {
+    private static Object newInstance(Class<?> clazz, boolean command) {
         try {
-            return clazz.getConstructor(JavaPlugin.class).newInstance(plugin);
+            var constructor = clazz.getConstructor(command ? JavaPlugin.class : null);
+            constructor.setAccessible(true);
+            return constructor.newInstance(plugin);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
             e.printStackTrace();
             return null;

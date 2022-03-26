@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'kr.entree.spigradle' version '2.2.4'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+group 'fr.sunderia'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    spigot()
+}
+
+dependencies {
+    implementation project(':')
+    compileOnly spigot('1.18.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+tasks.prepareSpigotPlugins.dependsOn(shadowJar)
+tasks.runSpigot.dependsOn(prepareSpigotPlugins)
+
+spigot {
+    debug {
+        args '--nojline', '--max-players', '100'
+        jvmArgs '-Xmx2G'
+        serverPort 25565
+        eula = true
+    }
+    authors "minemobs"
+    apiVersion "1.18"
+}
+
+test {
+    useJUnitPlatform()
+}

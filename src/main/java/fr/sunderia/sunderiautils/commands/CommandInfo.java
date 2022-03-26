@@ -22,7 +22,7 @@ public @interface CommandInfo {
     /**
      * @return {@code true} if the command can only be executed by a player, {@code false} otherwise
      */
-    boolean requiresPlayer();
+    boolean requiresPlayer() default true;
 
     /**
      * @return The aliases of the command
