@@ -33,6 +33,8 @@ spigot {
     apiVersion "1.18"
 }
 
+tasks.withType(PublishToMavenRepository).configureEach { it.enabled = false }
+
 test {
     useJUnitPlatform()
 }

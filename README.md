@@ -9,12 +9,8 @@ Utility classes
 public class ExamplePlugin extends JavaPlugin {
     
     @Override
-    public void onLoad() {
-        SunderiaUtils.of(this);
-    }
-    
-    @Override
     public void onEnable() {
+        SunderiaUtils.of(this);
         //Register commands
         SunderiaUtils.registerCommands("com.example.commands");
     }
