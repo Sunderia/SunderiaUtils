@@ -1,5 +1,6 @@
 package fr.sunderia.sunderiautils.listeners;
 
+import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.recipes.AnvilCrushRecipe;
 import fr.sunderia.sunderiautils.recipes.AnvilRecipe;
 import fr.sunderia.sunderiautils.utils.ItemStackUtils;
@@ -14,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
 
@@ -33,10 +35,17 @@ public class RecipeListener implements Listener {
         if(event.getInventory().getType() != InventoryType.ANVIL || event.getRawSlot() != 2) return;
         if(event.getWhoClicked().getInventory().firstEmpty() == -1) return;
         AnvilInventory inv = (AnvilInventory) event.getInventory();
-        if (AnvilRecipe.getRecipes().stream().noneMatch(recipe -> recipe != null && recipe.isEquals(inv))) return;
-        event.getWhoClicked().getInventory().addItem(event.getCurrentItem());
-        inv.getItem(0).setAmount(inv.getItem(0).getAmount() - 1);
-        inv.getItem(1).setAmount(inv.getItem(1).getAmount() - 1);
+        Optional<AnvilRecipe> recipe = AnvilRecipe.getRecipes().stream().filter(anvilRecipe -> anvilRecipe != null && anvilRecipe.isEquals(inv)).findFirst();
+        if (recipe.isEmpty()) return;
+        ItemStack base = inv.getItem(0);
+        ItemStack addition = inv.getItem(1);
+        if(base.getAmount() <= 1 && addition.getAmount() <= 1) return;
+        Bukkit.getScheduler().runTaskLater(SunderiaUtils.getPlugin(), () -> {
+            base.setAmount(base.getAmount() - 1);
+            addition.setAmount(addition.getAmount() - 1);
+            inv.setItem(0, base);
+            inv.setItem(1, addition);
+        }, 1L);
     }
 
     @EventHandler

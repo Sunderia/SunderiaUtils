@@ -1,9 +1,9 @@
 package fr.sunderia.sunderiautils;
 
 import com.google.common.reflect.ClassPath;
+import com.jeff_media.armorequipevent.ArmorEquipEvent;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
-import fr.sunderia.sunderiautils.listeners.PlayerListener;
 import fr.sunderia.sunderiautils.listeners.RecipeListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
@@ -37,8 +37,9 @@ public class SunderiaUtils {
         } catch (NoSuchAlgorithmException e) {
             random = new Random();
         }
-        Bukkit.getPluginManager().registerEvents(new PlayerListener(), plugin);
         Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
+        Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
+        ArmorEquipEvent.registerListener(plugin);
     }
 
     /**
@@ -64,6 +65,7 @@ public class SunderiaUtils {
                 .getTopLevelClassesRecursive(packageName)
                 .stream()
                 .map(ClassPath.ClassInfo::load)
+                .filter(PluginCommand.class::isAssignableFrom)
                 .filter(clazz -> clazz.isAnnotationPresent(CommandInfo.class))
                 .forEach(clazz -> {
                     LOGGER.info("Registering command {}", clazz.getAnnotation(CommandInfo.class).name());
@@ -105,7 +107,7 @@ public class SunderiaUtils {
                 .getTopLevelClassesRecursive(packageName)
                 .stream()
                 .map(ClassPath.ClassInfo::load)
-                .filter(clazz -> clazz.isAssignableFrom(Listener.class))
+                .filter(Listener.class::isAssignableFrom)
                 .filter(clazz -> {
                     try {
                         clazz.getConstructor();
@@ -115,7 +117,7 @@ public class SunderiaUtils {
                     }
                 })
                 .forEach(clazz -> {
-                    LOGGER.info("Registering listener {}", clazz.getAnnotation(CommandInfo.class).name());
+                    LOGGER.info("Registering listener {}", clazz.getSimpleName());
                     Bukkit.getPluginManager().registerEvents((Listener) Objects.requireNonNull(newInstance(clazz, false)), plugin);
                 });
     }
@@ -142,9 +144,15 @@ public class SunderiaUtils {
 
     private static Object newInstance(Class<?> clazz, boolean command) {
         try {
-            var constructor = clazz.getConstructor(command ? JavaPlugin.class : null);
-            constructor.setAccessible(true);
-            return constructor.newInstance(plugin);
+            if(command) {
+                var constructor = clazz.getConstructor(JavaPlugin.class);
+                constructor.setAccessible(true);
+                return constructor.newInstance(plugin);
+            } else {
+                var constructor = clazz.getConstructor();
+                constructor.setAccessible(true);
+                return constructor.newInstance();
+            }
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
             e.printStackTrace();
             return null;

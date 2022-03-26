@@ -54,6 +54,6 @@ public class AnvilRecipe {
     }
 
     public boolean isEquals(AnvilInventory inv) {
-        return ItemStackUtils.isSameItem(inv.getItem(0), getBase()) && ItemStackUtils.isSameItem(inv.getItem(1), getAddition());
+        return ItemStackUtils.isSimilar(inv.getItem(0), getBase()) && ItemStackUtils.isSimilar(inv.getItem(1), getAddition());
     }
 }

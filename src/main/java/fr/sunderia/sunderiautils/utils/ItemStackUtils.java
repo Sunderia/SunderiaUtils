@@ -4,6 +4,7 @@ import fr.sunderia.sunderiautils.SunderiaUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
@@ -38,6 +39,31 @@ public class ItemStackUtils {
                 mat.name().endsWith("_SHOVEL");
     }
 
+    public static boolean isCustomItem(ItemStack item) {
+        if(!hasLore(item)) return false;
+        ItemMeta im = item.clone().getItemMeta();
+        String lore = im.getLore().get(im.getLore().size() - 1);
+        return ChatColor.stripColor(lore).startsWith(SunderiaUtils.getPlugin().getName() + ":");
+    }
+
+    /**
+     * This method check if both item are the same.
+     * @param first The first item
+     * @param second The second item
+     * @see #isSameItem(ItemStack, ItemStack)
+     */
+    public static boolean isSimilar(ItemStack first, ItemStack second) {
+        if(isAirOrNull(first) || isAirOrNull(second)) return false;
+        ItemMeta im1 = first.getItemMeta();
+        ItemMeta im2 = second.getItemMeta();
+        if(im1 instanceof Damageable dmg1 && im2 instanceof Damageable dmg2) {
+            dmg1.setDamage(dmg2.getDamage());
+        }
+        first.setItemMeta(im1);
+        second.setItemMeta(im2);
+        return first.isSimilar(second);
+    }
+
     /**
      * This method use the lore to check if both items have the same name.
      * This method only works on custom items.
@@ -46,14 +72,15 @@ public class ItemStackUtils {
      * @return {@code true} if the two items are the same
      */
     public static boolean isSameItem(ItemStack first, ItemStack second) {
-        if(!hasLore(first) || !hasLore(second)) return false;
+        /*if(!hasLore(first) || !hasLore(second)) return false;
         ItemMeta im1 = first.clone().getItemMeta();
         ItemMeta im2 = second.clone().getItemMeta();
         String lore = im1.getLore().get(im1.getLore().size() - 1);
         String lore2 = im2.getLore().get(im2.getLore().size() - 1);
         if(!ChatColor.stripColor(lore).startsWith(SunderiaUtils.getPlugin().getName() + ":") ||
-                !ChatColor.stripColor(lore2).startsWith(SunderiaUtils.getPlugin().getName() + ":")) return false;
-        return lore.equals(lore2);
+                !ChatColor.stripColor(lore2).startsWith(SunderiaUtils.getPlugin().getName() + ":")) return false;*/
+        if(!isCustomItem(first) || !isCustomItem(second)) return false;
+        return first.getItemMeta().getLore().equals(second.getItemMeta().getLore());
     }
 
     /**

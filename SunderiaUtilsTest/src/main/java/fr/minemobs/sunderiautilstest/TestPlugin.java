@@ -18,6 +18,7 @@ public class TestPlugin extends JavaPlugin {
         SunderiaUtils.of(this);
         try {
             SunderiaUtils.registerCommands(this.getClass().getPackageName() + ".commands");
+            SunderiaUtils.registerListeners(this.getClass().getPackageName() + ".listener");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

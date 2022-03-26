@@ -27,7 +27,7 @@ task downloadBuildTools(type: Download) {
     dependsOn(checkVersion)
     downloadFolder.mkdirs()
     src 'https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar'
-    dest downloadFolder
+    dest file(downloadFolder.absolutePath + '/BuildTools.jar')
     onlyIfModified true
 }
 

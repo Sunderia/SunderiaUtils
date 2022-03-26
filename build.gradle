@@ -8,7 +8,7 @@ apply from: rootProject.file('specialSource.gradle')
 apply from: rootProject.file('buildtools.gradle')
 
 group 'fr.sunderia'
-version '1.0.2-SNAPSHOT'
+version '1.1-SNAPSHOT'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -18,6 +18,10 @@ repositories {
         name = "Spigot-Repo"
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
+    maven {
+        name = "Jeff"
+        url = 'https://hub.jeff-media.com/nexus/repository/jeff-media-public/'
+    }
     mavenLocal()
 }
 
@@ -25,6 +29,7 @@ dependencies {
     compileOnly('org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT')
     compileOnly 'org.spigotmc:spigot:1.18.1-R0.1-SNAPSHOT:remapped-mojang'
     compileOnly('org.jetbrains:annotations:23.0.0')
+    implementation 'com.jeff_media:ArmorEquipEvent:1.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
