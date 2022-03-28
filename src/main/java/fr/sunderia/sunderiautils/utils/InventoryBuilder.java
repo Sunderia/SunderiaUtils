@@ -145,8 +145,7 @@ public class InventoryBuilder implements Listener {
 
     @EventHandler
     private void onClose(InventoryCloseEvent event) {
-        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name)) return;
-        if (runnable == null) return;
+        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) || runnable == null) return;
         this.runnable.cancel();
         this.runnable = null;
     }
