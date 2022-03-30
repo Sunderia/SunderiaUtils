@@ -14,10 +14,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -28,6 +32,7 @@ public class SunderiaUtils {
 
     private static JavaPlugin plugin;
     private static Random random;
+    private static boolean autoReload;
     private static final Logger LOGGER = LoggerFactory.getLogger(SunderiaUtils.class);
 
     private SunderiaUtils(JavaPlugin plugin) {
@@ -37,7 +42,6 @@ public class SunderiaUtils {
         } catch (NoSuchAlgorithmException e) {
             random = new Random();
         }
-        Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
         Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
         ArmorEquipEvent.registerListener(plugin);
     }
@@ -157,6 +161,18 @@ public class SunderiaUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static void loadDatapack(InputStream datapack) throws IOException {
+        Files.copy(datapack, Bukkit.getWorlds().get(0).getWorldFolder().toPath().getParent(), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public static void setAutoReload(boolean autoReload) {
+        SunderiaUtils.autoReload = autoReload;
+    }
+
+    public static boolean willAutoReload() {
+        return autoReload;
     }
 
     /**

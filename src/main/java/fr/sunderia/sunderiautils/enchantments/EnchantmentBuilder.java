@@ -1,11 +1,8 @@
-package fr.sunderia.sunderiautils.utils;
+package fr.sunderia.sunderiautils.enchantments;
 
-import fr.sunderia.sunderiautils.enchantments.CustomEnchantmentWrapper;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
-import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 

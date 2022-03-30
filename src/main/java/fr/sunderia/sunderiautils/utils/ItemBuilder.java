@@ -254,7 +254,9 @@ public class ItemBuilder implements Listener {
      * @return The {@link ItemStack}
      */
     public ItemStack build() {
-        if(interactConsumer != null) Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaUtils.getPlugin());
+        if(interactConsumer != null) {
+            Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaUtils.getPlugin());
+        }
         ItemMeta meta = getItemMeta();
         List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
         String l = ChatColor.DARK_GRAY + SunderiaUtils.getPlugin().getName().toLowerCase() + ":" +

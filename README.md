@@ -17,6 +17,8 @@ public class ExamplePlugin extends JavaPlugin {
 }
 ```
 
+For more examples, see the [Sunderia Utils](https://github.com/Sunderia/SunderiaUtils/tree/main/SunderiaUtilsTest/src/main/java/fr/minemobs/sunderiautilstest).
+
 ---
 
 ## Download
