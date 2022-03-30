@@ -32,7 +32,6 @@ public class SunderiaUtils {
 
     private static JavaPlugin plugin;
     private static Random random;
-    private static boolean autoReload;
     private static final Logger LOGGER = LoggerFactory.getLogger(SunderiaUtils.class);
 
     private SunderiaUtils(JavaPlugin plugin) {
@@ -165,14 +164,6 @@ public class SunderiaUtils {
 
     public static void loadDatapack(InputStream datapack) throws IOException {
         Files.copy(datapack, Bukkit.getWorlds().get(0).getWorldFolder().toPath().getParent(), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    public static void setAutoReload(boolean autoReload) {
-        SunderiaUtils.autoReload = autoReload;
-    }
-
-    public static boolean willAutoReload() {
-        return autoReload;
     }
 
     /**
