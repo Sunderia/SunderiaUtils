@@ -5,6 +5,7 @@ import com.jeff_media.armorequipevent.ArmorEquipEvent;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
 import fr.sunderia.sunderiautils.listeners.RecipeListener;
+import fr.sunderia.sunderiautils.listeners.WorldListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
@@ -42,6 +43,7 @@ public class SunderiaUtils {
             random = new Random();
         }
         Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
+        Bukkit.getPluginManager().registerEvents(new WorldListener(), plugin);
         ArmorEquipEvent.registerListener(plugin);
     }
 

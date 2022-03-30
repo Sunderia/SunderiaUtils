@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class PlayerListener implements Listener {
 
-    private final ItemStack builder = new ItemBuilder(Material.DIAMOND_SWORD).setDisplayName("feur")
+    private final ItemStack builder = new ItemBuilder(Material.DIAMOND_PICKAXE).setDisplayName("feur")
             .addEnchant(
                     new EnchantmentBuilder("test")
                             .onBreakBlock(e -> e.getPlayer().sendMessage("Your item has the Test enchantment"))

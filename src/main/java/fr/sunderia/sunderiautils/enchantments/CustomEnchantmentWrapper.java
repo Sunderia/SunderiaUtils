@@ -1,6 +1,7 @@
 package fr.sunderia.sunderiautils.enchantments;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -86,13 +87,14 @@ public class CustomEnchantmentWrapper extends Enchantment implements Listener {
 
     @EventHandler
     public void onInteractEvent(PlayerInteractEvent event) {
-        if(interactEventConsumer == null) return;
+        if(ItemStackUtils.isAirOrNull(event.getItem()) || event.getItem().getItemMeta().hasEnchant(this) || interactEventConsumer == null) return;
         interactEventConsumer.accept(event);
     }
 
     @EventHandler
     public void onBreakEvent(BlockBreakEvent event) {
-        if(breakEventConsumer == null) return;
+        var is = event.getPlayer().getInventory().getItemInMainHand();
+        if(ItemStackUtils.isAirOrNull(is) || is.getItemMeta().hasEnchant(this) || breakEventConsumer == null) return;
         breakEventConsumer.accept(event);
     }
 }

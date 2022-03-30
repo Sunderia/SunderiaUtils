@@ -1,8 +1,10 @@
 package fr.sunderia.sunderiautils.utils;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.enchantments.CustomEnchantmentWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -117,5 +119,11 @@ public class ItemStackUtils {
         List<Material> skulls = Arrays.stream(Material.values()).filter(material -> (!material.name().startsWith("PISTON") && material.name().endsWith("_HEAD") && !material.name().endsWith("_WALL_HEAD")) ||
                 (material.name().endsWith("_SKULL") && !material.name().startsWith("LEGACY") && !material.name().endsWith("_WALL_SKULL"))).toList();
         return skulls.get(SunderiaUtils.getRandom().nextInt(skulls.size()));
+    }
+
+    public static boolean hasEnchantment(Enchantment enchantment, ItemStack item) {
+        if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
+        item.getItemMeta().getEnchants().keySet().stream().map(Enchantment::getName).forEach(System.out::println);
+        return item.getItemMeta().hasEnchant(enchantment);
     }
 }
