@@ -28,7 +28,7 @@ public abstract class PluginCommand extends BukkitCommand {
         setName(info.name());
         setAliases(ImmutableList.copyOf(info.aliases()));
         setDescription(info.description());
-        setUsage(info.usage());
+        setUsage(info.usage().contains("<command>") ? info.usage().replaceAll("<command>", getName()) : info.usage());
         setPermission(info.permission());
         setPermissionMessage(info.permissionMessage());
     }
