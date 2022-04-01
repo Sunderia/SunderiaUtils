@@ -34,7 +34,7 @@ jobs:
       - name: Run BuildTools
         uses: SpraxDev/Action-SpigotMC@v4
         with:
-          version: '1.18.1'
+          versions: '1.18.1'
           remapped: true
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
