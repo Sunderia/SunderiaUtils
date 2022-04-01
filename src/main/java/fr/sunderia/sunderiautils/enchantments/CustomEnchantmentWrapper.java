@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
@@ -39,6 +40,24 @@ public class CustomEnchantmentWrapper extends Enchantment implements Listener {
         this.interactEventConsumer = interactEventConsumer;
         this.breakEventConsumer = breakEventConsumer;
         Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaUtils.getPlugin());
+        if(Arrays.stream(Enchantment.values()).anyMatch(e -> e.getKey().equals(this.getKey()))) return;
+        registerEnchantment(this);
+    }
+
+    /**
+     * Register {@link Enchantment enchantments}.
+     * @param enchantment An {@link Enchantment enchantment} to register.
+     * @throws RuntimeException if the {@link Enchantment} can't be registered
+     */
+    public static void registerEnchantment(Enchantment enchantment) {
+        try {
+            Field f = Enchantment.class.getDeclaredField("acceptingNew");
+            f.setAccessible(true);
+            f.set(null, true);
+            Enchantment.registerEnchantment(enchantment);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @NotNull
@@ -87,14 +106,14 @@ public class CustomEnchantmentWrapper extends Enchantment implements Listener {
 
     @EventHandler
     public void onInteractEvent(PlayerInteractEvent event) {
-        if(ItemStackUtils.isAirOrNull(event.getItem()) || event.getItem().getItemMeta().hasEnchant(this) || interactEventConsumer == null) return;
+        if(ItemStackUtils.isAirOrNull(event.getItem()) || !event.getItem().getItemMeta().hasEnchant(this) || interactEventConsumer == null) return;
         interactEventConsumer.accept(event);
     }
 
     @EventHandler
     public void onBreakEvent(BlockBreakEvent event) {
         var is = event.getPlayer().getInventory().getItemInMainHand();
-        if(ItemStackUtils.isAirOrNull(is) || is.getItemMeta().hasEnchant(this) || breakEventConsumer == null) return;
+        if(ItemStackUtils.isAirOrNull(is) || !is.getItemMeta().hasEnchant(this) || breakEventConsumer == null) return;
         breakEventConsumer.accept(event);
     }
 }

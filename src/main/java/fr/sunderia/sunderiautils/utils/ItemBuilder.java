@@ -252,8 +252,10 @@ public class ItemBuilder implements Listener {
     /**
      * This method will register the events, add a line to the lore and set the item meta.
      * @return The {@link ItemStack}
+     * @throws IllegalStateException If the item does not have a name.
      */
     public ItemStack build() {
+        if(!stack.getItemMeta().hasDisplayName() || stack.getItemMeta().getDisplayName().isEmpty()) throw new IllegalStateException("The item has no display name!");
         if(interactConsumer != null) {
             Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaUtils.getPlugin());
         }
