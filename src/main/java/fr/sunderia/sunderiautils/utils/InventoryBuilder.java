@@ -131,7 +131,7 @@ public class InventoryBuilder implements Listener {
     @EventHandler
     private void onOpen(InventoryOpenEvent event) {
         if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name)) return;
-        if (runnable == null) {
+        if (runnable == null && updateEventConsumer != null) {
             this.runnable = new BukkitRunnable() {
                 @Override
                 public void run() {
