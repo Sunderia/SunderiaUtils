@@ -4,12 +4,12 @@ import com.google.common.reflect.ClassPath;
 import com.jeff_media.armorequipevent.ArmorEquipEvent;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
-import fr.sunderia.sunderiautils.listeners.RecipeListener;
 import fr.sunderia.sunderiautils.listeners.PlayerListener;
+import fr.sunderia.sunderiautils.listeners.RecipeListener;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -17,14 +17,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 
@@ -114,7 +112,7 @@ public class SunderiaUtils {
             if(extendsClass.isAssignableFrom(aClass)) {
                 return (Class<? extends T>) aClass;
             }
-        } catch (ClassNotFoundException e) {}
+        } catch (ClassNotFoundException ignored) {}
         return null;
     }
 
@@ -147,6 +145,10 @@ public class SunderiaUtils {
 
     public static void loadDatapack(InputStream datapack) throws IOException {
         Files.copy(datapack, Bukkit.getWorlds().get(0).getWorldFolder().toPath().getParent(), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public static NamespacedKey key(String key) {
+        return new NamespacedKey(plugin, key);
     }
 
     /**

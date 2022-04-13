@@ -2,6 +2,7 @@ package fr.sunderia.sunderiautils.enchantments;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.utils.ItemStackUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -11,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -18,13 +20,65 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+/**
+ * @deprecated Use {@link fr.sunderia.sunderiautils.enchantments.CustomEnchantment} instead.
+ * @since 1.3
+ */
+@Deprecated(forRemoval = true, since = "1.3")
+@ApiStatus.ScheduledForRemoval(inVersion = "1.4")
 public class CustomEnchantmentWrapper extends Enchantment implements Listener {
+
+    @Deprecated(forRemoval = true, since = "1.3")
+    public static class EnchantmentBuilder {
+
+        private final String namespace;
+        private Consumer<PlayerInteractEvent> interactEventConsumer;
+        private Consumer<BlockBreakEvent> breakBlockConsumer;
+        private Enchantment[] conflicts = new Enchantment[0];
+        private int maxLevel = 1;
+        private EnchantmentTarget target = EnchantmentTarget.BREAKABLE;
+
+        public EnchantmentBuilder(String namespace) {
+            this.namespace = namespace;
+        }
+
+        public EnchantmentBuilder setConflicts(Enchantment... enchantments) {
+            this.conflicts = enchantments;
+            return this;
+        }
+
+        public EnchantmentBuilder onInteract(Consumer<PlayerInteractEvent> consumer) {
+            this.interactEventConsumer = consumer;
+            return this;
+        }
+
+        public EnchantmentBuilder onBreakBlock(Consumer<BlockBreakEvent> consumer) {
+            this.breakBlockConsumer = consumer;
+            return this;
+        }
+
+        public EnchantmentBuilder setMaxLevel(int maxLevel) {
+            this.maxLevel = maxLevel;
+            return this;
+        }
+
+        public EnchantmentBuilder setTarget(EnchantmentTarget target) {
+            this.target = target;
+            return this;
+        }
+
+        public Enchantment build() {
+            return new CustomEnchantmentWrapper(namespace, WordUtils.capitalize(namespace, new char[]{'_'}).replace("_", ""),
+                    maxLevel, target, interactEventConsumer, breakBlockConsumer, conflicts);
+        }
+    }
 
     private final String name;
     private final int maxLvl;
     private final EnchantmentTarget target;
     private final Enchantment[] conflicts;
     private final Consumer<PlayerInteractEvent> interactEventConsumer;
+
     private final Consumer<BlockBreakEvent> breakEventConsumer;
 
     public CustomEnchantmentWrapper(String namespace, String name, int maxLvl, EnchantmentTarget target, Consumer<PlayerInteractEvent> interactEventConsumer, Consumer<BlockBreakEvent> breakEventConsumer) {
@@ -49,7 +103,7 @@ public class CustomEnchantmentWrapper extends Enchantment implements Listener {
      * @param enchantment An {@link Enchantment enchantment} to register.
      * @throws RuntimeException if the {@link Enchantment} can't be registered
      */
-    public static void registerEnchantment(Enchantment enchantment) {
+    public static void registerEnchantment(@NotNull Enchantment enchantment) {
         try {
             Field f = Enchantment.class.getDeclaredField("acceptingNew");
             f.setAccessible(true);
@@ -61,7 +115,6 @@ public class CustomEnchantmentWrapper extends Enchantment implements Listener {
     }
 
     @NotNull
-    @SuppressWarnings("deprecation")
     @Override
     public String getName() {
         return name;
@@ -88,7 +141,6 @@ public class CustomEnchantmentWrapper extends Enchantment implements Listener {
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean isCursed() {
         return false;
