@@ -32,6 +32,20 @@ public class InventoryBuilder implements Listener {
     private int runnableDelay = 20;
     private boolean cancelEvent = false;
 
+    public InventoryBuilder(@NotNull Inventory inventory, @NotNull String inventoryName){
+        this.name = inventoryName;
+        this.itemStacks = List.of(inventory.getContents());
+        this.setRows(inventory.getSize() / 9)
+        this.spacing = 0;
+    }
+
+    public InventoryBuilder(@NotNull Inventory inventory, @NotNull String inventoryName, @NotNull int spacing){
+        this.name = inventoryName;
+        this.itemStacks = List.of(inventory.getContents());
+        this.setRows(inventory.getSize() / 9)
+        this.spacing = spacing;
+    }
+
     /**
      * @param name The name of the inventory
      */
