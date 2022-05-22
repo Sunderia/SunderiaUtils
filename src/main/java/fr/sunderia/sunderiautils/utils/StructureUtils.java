@@ -12,6 +12,6 @@ public class StructureUtils {
     }
 
     public static Vector getCenter(Structure structure, boolean centerY) {
-        return centerY ? structure.getSize().clone().multiply(.5) : structure.getSize().clone().multiply(.5).setY(0);
+        return structure.getSize().multiply(new Vector(.5, centerY ? .5 : 0, .5));
     }
 }
