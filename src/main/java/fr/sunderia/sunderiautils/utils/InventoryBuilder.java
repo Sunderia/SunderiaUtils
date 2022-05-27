@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class InventoryBuilder implements Listener {
@@ -31,6 +32,34 @@ public class InventoryBuilder implements Listener {
     private int runnableTime = 20;
     private int runnableDelay = 20;
     private boolean cancelEvent = false;
+
+
+    public static class Shape {
+        private final String shape;
+        private final int rows;
+        private final Map<Character, ItemStack> itemMap;
+
+        public Shape(String shape, Map<Character, ItemStack> itemMap) {
+            this.shape = shape;
+            if(shape.lines().anyMatch(line -> line.length() != 9)) {
+                throw new IllegalArgumentException("Shape must be 9 characters long");
+            }
+            this.itemMap = itemMap;
+            this.rows = (int) shape.lines().count();
+        }
+
+        public String getShape() {
+            return shape;
+        }
+
+        public int getRows() {
+            return rows;
+        }
+
+        public Map<Character, ItemStack> getItemMap() {
+            return itemMap;
+        }
+    }
 
     /**
      * @param name The name of the inventory
@@ -62,6 +91,26 @@ public class InventoryBuilder implements Listener {
         this.itemStacks = new ArrayList<>(rows * 9);
         this.setRows(rows);
         this.spacing = spacing;
+    }
+
+    public InventoryBuilder(@NotNull String name, @NotNull Shape shape) {
+        this.name = name;
+        ItemStack[] is = new ItemStack[shape.getRows() * 9];
+        this.spacing = 0;
+        String shapeStr = shape.getShape();
+        this.rows = shape.getRows();
+        AtomicInteger index = new AtomicInteger(0);
+        shapeStr.lines().forEach(line -> {
+            for(int i = 0; i < line.length(); i++) {
+                char c = line.charAt(i);
+                if(c == ' ' || shape.getItemMap().get(c) == null) {
+                    is[index.getAndIncrement()] = new ItemStack(Material.AIR);
+                } else {
+                    is[index.getAndIncrement()] = shape.getItemMap().get(c);
+                }
+            }
+        });
+        this.itemStacks = Arrays.asList(is);
     }
 
     /**
@@ -255,7 +304,9 @@ public class InventoryBuilder implements Listener {
     public Inventory build() {
         Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaUtils.getPlugin());
         Inventory inv = Bukkit.createInventory(null, rows * 9, name);
-        itemStacks.forEach(inv::addItem);
+        for (int i = 0; i < itemStacks.size(); i++) {
+            inv.setItem(i, itemStacks.get(i));
+        }
         return inv;
     }
 

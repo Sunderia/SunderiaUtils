@@ -21,6 +21,7 @@ import java.util.List;
 public class ItemBuilder implements Listener {
 
     private ItemStack stack;
+    private boolean hideIdentifier = false;
     private Consumer<PlayerInteractEvent> interactConsumer;
 
     /**
@@ -147,6 +148,10 @@ public class ItemBuilder implements Listener {
         return this;
     }
 
+    public void setHideIdentifier(boolean hideIdentifier) {
+        this.hideIdentifier = hideIdentifier;
+    }
+
     /**
      * @param displayName The display name of the item
      * @return The ItemBuilder
@@ -264,7 +269,7 @@ public class ItemBuilder implements Listener {
         String l = ChatColor.DARK_GRAY + SunderiaUtils.getPlugin().getName().toLowerCase() + ":" +
                 ChatColor.stripColor(getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase());
         lore.removeIf(s -> s.equalsIgnoreCase(l));
-        lore.add(l);
+        if(!hideIdentifier) lore.add(l);
         meta.setLore(lore);
         stack.setItemMeta(meta);
         return stack;

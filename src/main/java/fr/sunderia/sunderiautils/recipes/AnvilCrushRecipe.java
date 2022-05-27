@@ -2,7 +2,6 @@ package fr.sunderia.sunderiautils.recipes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import fr.sunderia.sunderiautils.SunderiaUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AnvilCrushRecipe implements Recipe {
@@ -46,6 +44,10 @@ public class AnvilCrushRecipe implements Recipe {
 
     public static ImmutableMap<NamespacedKey, AnvilCrushRecipe> getRecipes() {
         return ImmutableMap.copyOf(recipes);
+    }
+
+    public NamespacedKey getKey() {
+        return key;
     }
 
     public Material getBase() {

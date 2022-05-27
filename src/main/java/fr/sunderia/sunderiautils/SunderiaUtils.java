@@ -16,11 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Objects;
@@ -106,16 +103,6 @@ public class SunderiaUtils {
                 });
     }
 
-    private static <T> Class<? extends T> getClassByName(String className, Class<T> extendsClass) {
-        try {
-            Class<?> aClass = Class.forName(className);
-            if(extendsClass.isAssignableFrom(aClass)) {
-                return (Class<? extends T>) aClass;
-            }
-        } catch (ClassNotFoundException ignored) {}
-        return null;
-    }
-
     private static ClassLoader getClassLoader() {
         try {
             Method m = JavaPlugin.class.getDeclaredMethod("getClassLoader");
@@ -141,10 +128,6 @@ public class SunderiaUtils {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static void loadDatapack(InputStream datapack) throws IOException {
-        Files.copy(datapack, Bukkit.getWorlds().get(0).getWorldFolder().toPath().getParent(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static NamespacedKey key(String key) {
