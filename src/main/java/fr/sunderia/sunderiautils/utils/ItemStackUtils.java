@@ -1,7 +1,6 @@
 package fr.sunderia.sunderiautils.utils;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
-import fr.sunderia.sunderiautils.enchantments.CustomEnchantmentWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -123,7 +122,6 @@ public class ItemStackUtils {
 
     public static boolean hasEnchantment(Enchantment enchantment, ItemStack item) {
         if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
-        item.getItemMeta().getEnchants().keySet().stream().map(Enchantment::getName).forEach(System.out::println);
         return item.getItemMeta().hasEnchant(enchantment);
     }
 }

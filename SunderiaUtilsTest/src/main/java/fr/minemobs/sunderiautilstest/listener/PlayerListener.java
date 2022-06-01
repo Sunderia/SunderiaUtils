@@ -2,9 +2,12 @@ package fr.minemobs.sunderiautilstest.listener;
 
 import fr.minemobs.sunderiautilstest.PacketSender;
 import fr.minemobs.sunderiautilstest.TestPlugin;
+import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.customblock.CustomBlock;
 import fr.sunderia.sunderiautils.enchantments.CustomEnchantment;
 import fr.sunderia.sunderiautils.utils.InventoryBuilder;
 import fr.sunderia.sunderiautils.utils.ItemBuilder;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,7 +38,10 @@ public class PlayerListener implements Listener {
         if (!enchantments.contains(ce)) {
             enchantments.add(ce);
         }
-        event.getPlayer().getInventory().addItem(builder.clone());
+        event.getPlayer().getInventory().clear();
+        event.getPlayer().getInventory().setItem(4, builder.clone());
+        event.getPlayer().getInventory().setItem(2, new CustomBlock.Builder(SunderiaUtils.key("ruby_ore"), 1)
+                .setDrops(new ItemBuilder(Material.EMERALD).setDisplayName(ChatColor.RED + "RUBY").build()).build().getAsItem());
     }
 
     @EventHandler

@@ -34,7 +34,7 @@ repositories {
 
 dependencies {
     //...
-    implementation 'fr.sunderia:SunderiaUtils:1.0-SNAPSHOT'
+    implementation 'fr.sunderia:SunderiaUtils:1.5-SNAPSHOT'
 }
 
 ```

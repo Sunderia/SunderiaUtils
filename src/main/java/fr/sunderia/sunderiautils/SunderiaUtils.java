@@ -4,6 +4,7 @@ import com.google.common.reflect.ClassPath;
 import com.jeff_media.armorequipevent.ArmorEquipEvent;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
+import fr.sunderia.sunderiautils.listeners.CustomBlockListener;
 import fr.sunderia.sunderiautils.listeners.PlayerListener;
 import fr.sunderia.sunderiautils.listeners.RecipeListener;
 import org.bukkit.Bukkit;
@@ -30,14 +31,9 @@ public class SunderiaUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(SunderiaUtils.class);
 
     private SunderiaUtils(JavaPlugin plugin) {
-        SunderiaUtils.plugin = plugin;
-        try {
-            random = SecureRandom.getInstanceStrong();
-        } catch (NoSuchAlgorithmException e) {
-            random = new Random();
-        }
         Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), plugin);
+        Bukkit.getPluginManager().registerEvents(new CustomBlockListener(), plugin);
         ArmorEquipEvent.registerListener(plugin);
     }
 
@@ -48,6 +44,15 @@ public class SunderiaUtils {
      * @return An instance of {@link SunderiaUtils}
      */
     public static SunderiaUtils of(JavaPlugin plugin) {
+        if(SunderiaUtils.plugin != null) {
+            throw new UnsupportedOperationException("The plugin field is already set. Please call the of method only once.");
+        }
+        SunderiaUtils.plugin = plugin;
+        try {
+            random = SecureRandom.getInstanceStrong();
+        } catch (NoSuchAlgorithmException e) {
+            random = new Random();
+        }
         return new SunderiaUtils(plugin);
     }
 
@@ -58,7 +63,7 @@ public class SunderiaUtils {
      */
     public static void registerCommands(String packageName) throws IOException {
         if(plugin == null) {
-            throw new RuntimeException("Plugin not found");
+            throw new UnsupportedOperationException("Plugin not found");
         }
         ClassPath.from(getClassLoader())
                 .getTopLevelClassesRecursive(packageName)
@@ -82,7 +87,7 @@ public class SunderiaUtils {
      */
     public static void registerListeners(String packageName) throws IOException {
         if(plugin == null) {
-            throw new RuntimeException("Plugin not found");
+            throw new UnsupportedOperationException("Plugin not found");
         }
         ClassPath.from(getClassLoader())
                 .getTopLevelClassesRecursive(packageName)

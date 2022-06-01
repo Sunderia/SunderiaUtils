@@ -21,6 +21,7 @@ import java.util.List;
 public class ItemBuilder implements Listener {
 
     private ItemStack stack;
+    //TODO: Remove identifier and use PDC instead
     private boolean hideIdentifier = false;
     private Consumer<PlayerInteractEvent> interactConsumer;
 
@@ -148,8 +149,13 @@ public class ItemBuilder implements Listener {
         return this;
     }
 
-    public void setHideIdentifier(boolean hideIdentifier) {
+    public ItemBuilder setHideIdentifier(boolean hideIdentifier) {
         this.hideIdentifier = hideIdentifier;
+        return this;
+    }
+
+    public ItemBuilder hideIdentifier() {
+        return setHideIdentifier(!this.hideIdentifier);
     }
 
     /**
