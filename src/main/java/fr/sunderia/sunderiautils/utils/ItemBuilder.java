@@ -266,18 +266,20 @@ public class ItemBuilder implements Listener {
      * @throws IllegalStateException If the item does not have a name.
      */
     public ItemStack build() {
-        if(!stack.getItemMeta().hasDisplayName() || stack.getItemMeta().getDisplayName().isEmpty()) throw new IllegalStateException("The item has no display name!");
+        if((!stack.getItemMeta().hasDisplayName() || stack.getItemMeta().getDisplayName().isEmpty()) && !hideIdentifier) throw new IllegalStateException("The item has no display name!");
         if(interactConsumer != null) {
             Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaUtils.getPlugin());
         }
-        ItemMeta meta = getItemMeta();
-        List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
-        String l = ChatColor.DARK_GRAY + SunderiaUtils.getPlugin().getName().toLowerCase() + ":" +
-                ChatColor.stripColor(getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase());
-        lore.removeIf(s -> s.equalsIgnoreCase(l));
-        if(!hideIdentifier) lore.add(l);
-        meta.setLore(lore);
-        stack.setItemMeta(meta);
+        if(!hideIdentifier) {
+            ItemMeta meta = getItemMeta();
+            List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
+            String l = ChatColor.DARK_GRAY + SunderiaUtils.getPlugin().getName().toLowerCase() + ":" +
+                    ChatColor.stripColor(getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase());
+            lore.removeIf(s -> s.equalsIgnoreCase(l));
+            lore.add(l);
+            meta.setLore(lore);
+            stack.setItemMeta(meta);
+        }
         return stack;
     }
 }

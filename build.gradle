@@ -8,7 +8,7 @@ apply from: rootProject.file('specialSource.gradle')
 apply from: rootProject.file('buildtools.gradle')
 
 group 'fr.sunderia'
-version '1.5-SNAPSHOT'
+version '1.5.1-SNAPSHOT'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
