@@ -72,9 +72,13 @@ public class ItemStackUtils {
      * @param second The second item
      * @return {@code true} if the two items are the same
      */
-    public static boolean isSameItem(ItemStack first, ItemStack second) {
+    public static boolean isSameCustomItem(ItemStack first, ItemStack second) {
         if(!isCustomItem(first) || !isCustomItem(second)) return false;
         return first.getItemMeta().getLore().equals(second.getItemMeta().getLore());
+    }
+    
+    public static boolean isSameItem(ItemStack first, ItemStack second) {
+        return ItemStackUtils.isCustomItem(first) && ItemStackUtils.isCustomItem(second) ? ItemStackUtils.isSameCustomItem(first, second) : ItemStackUtils.isSimilar(first, second);
     }
 
     /**
