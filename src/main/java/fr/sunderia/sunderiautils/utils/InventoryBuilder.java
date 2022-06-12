@@ -23,11 +23,13 @@ public class InventoryBuilder implements Listener {
     private final int spacing;
     private int rows = 3;
     private String name;
+    private boolean closed = false;
     private final List<ItemStack> itemStacks;
-    private Consumer<InventoryClickEvent> clickEventConsumer = InventoryEvent::getInventory;
-    private Consumer<InventoryOpenEvent> openEventConsumer = InventoryEvent::getInventory;
+    private Consumer<InventoryClickEvent> clickEventConsumer;
+    private Consumer<InventoryOpenEvent> openEventConsumer;
+    private Consumer<InventoryCloseEvent> closeEventConsumer;
     private Consumer<InventoryEvent> updateEventConsumer;
-    private Consumer<InventoryDragEvent> dragEventConsumer = InventoryEvent::getInventory;
+    private Consumer<InventoryDragEvent> dragEventConsumer;
     private BukkitRunnable runnable;
     //1 Second
     private int runnableTime = 20;
@@ -125,6 +127,16 @@ public class InventoryBuilder implements Listener {
 
     /**
      * @param eventConsumer A consumer containing the event
+     * The event will be called when the inventory is closed
+     * @return The builder
+     */
+    public InventoryBuilder onClose(Consumer<InventoryCloseEvent> eventConsumer) {
+        this.closeEventConsumer = eventConsumer;
+        return this;
+    }
+
+    /**
+     * @param eventConsumer A consumer containing the event
      * @return The builder
      */
     public InventoryBuilder onClick(Consumer<InventoryClickEvent> eventConsumer) {
@@ -178,9 +190,12 @@ public class InventoryBuilder implements Listener {
 
     @EventHandler
     private void onClick(InventoryClickEvent event) {
+        if(closed) return;
         if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name)) return;
         event.setCancelled(cancelEvent);
-        this.clickEventConsumer.accept(event);
+        if(clickEventConsumer != null) {
+            clickEventConsumer.accept(event);
+        }
     }
 
     @EventHandler
@@ -195,19 +210,31 @@ public class InventoryBuilder implements Listener {
             };
             runnable.runTaskTimer(SunderiaUtils.getPlugin(), runnableDelay, runnableTime);
         }
-        this.openEventConsumer.accept(event);
+        if(openEventConsumer != null) {
+            this.openEventConsumer.accept(event);
+        }
+        //Idk why this is needed but it is
+        event.getInventory().clear();
+        for (int i = 0; i < itemStacks.size(); i++) {
+            event.getInventory().setItem(i, itemStacks.get(i));
+        }
+        closed = false;
     }
 
     @EventHandler
     private void onClose(InventoryCloseEvent event) {
-        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) || runnable == null) return;
+        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) ||
+                runnable == null) return;
         this.runnable.cancel();
         this.runnable = null;
+        if(closeEventConsumer != null) this.closeEventConsumer.accept(event);
+        closed = true;
     }
     
     @EventHandler
     private void onDrag(InventoryDragEvent event){
-        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) || runnable == null) return;
+        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) ||
+                dragEventConsumer == null) return;
         this.dragEventConsumer.accept(event);
     }
 
@@ -321,5 +348,4 @@ public class InventoryBuilder implements Listener {
         }
         return inv;
     }
-
 }
