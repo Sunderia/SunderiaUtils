@@ -27,6 +27,7 @@ public class InventoryBuilder implements Listener {
     private Consumer<InventoryClickEvent> clickEventConsumer = InventoryEvent::getInventory;
     private Consumer<InventoryOpenEvent> openEventConsumer = InventoryEvent::getInventory;
     private Consumer<InventoryEvent> updateEventConsumer;
+    private Consumer<InventoryDragEvent> dragEventConsumer = InventoryEvent::getInventory;
     private BukkitRunnable runnable;
     //1 Second
     private int runnableTime = 20;
@@ -160,6 +161,11 @@ public class InventoryBuilder implements Listener {
         this.runnableDelay = delay;
         return this;
     }
+    
+    public InventoryBuilder onDrag(Consumer<InventoryDragEvent> eventConsumer){
+        this.dragEventConsumer = eventConsumer;
+        return this;
+    }
 
     /**
      * Cancel the click event if {@link #cancelEvent} is true
@@ -197,6 +203,12 @@ public class InventoryBuilder implements Listener {
         if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) || runnable == null) return;
         this.runnable.cancel();
         this.runnable = null;
+    }
+    
+    @EventHandler
+    private void onDrag(InventoryDragEvent event){
+        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) || runnable == null) return;
+        this.dragEventConsumer.accept(event);
     }
 
     /**
