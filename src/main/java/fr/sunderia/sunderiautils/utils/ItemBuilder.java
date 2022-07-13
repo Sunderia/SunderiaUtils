@@ -168,6 +168,14 @@ public class ItemBuilder implements Listener {
         setItemMeta(meta);
         return this;
     }
+    
+    public ItemBuilder addPersistentDataContainer(NamespacedKey namespacedKey, PersistentDataType persistentDataType, Object value){
+        ItemStack itemStack = this.build();
+        ItemMeta itemMeta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+        itemMeta.getPersistentDataContainer().set(namespacedKey, persistentDataType, value);
+        itemStack.setItemMeta(itemMeta);
+        return new ItemBuilder(itemStack);
+    }
 
     /**
      * This method will replace the current itemstack with the new one.
