@@ -12,6 +12,8 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.NamespacedKey;
 import org.bukkit.util.Consumer;
 
 import java.util.ArrayList;
@@ -167,6 +169,14 @@ public class ItemBuilder implements Listener {
         meta.setDisplayName(displayName);
         setItemMeta(meta);
         return this;
+    }
+    
+    public <T, Z> ItemBuilder addPersistentDataContainer(NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType, Z value) {
+        ItemStack itemStack = this.build();
+        ItemMeta itemMeta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+        itemMeta.getPersistentDataContainer().set(namespacedKey, persistentDataType, value);
+        itemStack.setItemMeta(itemMeta);
+        return new ItemBuilder(itemStack);
     }
 
     /**
