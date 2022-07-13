@@ -128,4 +128,8 @@ public class ItemStackUtils {
         if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
         return item.getItemMeta().hasEnchant(enchantment);
     }
+    
+    public static boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType persistentDataType){
+        return itemStack.hasItemMeta() ? itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType) : Bukkit.getItemFactory().getItemMeta(itemStack.getType()).getPersistentDataContainer().has(namespacedKey, persistentDataType);
+    }
 }
