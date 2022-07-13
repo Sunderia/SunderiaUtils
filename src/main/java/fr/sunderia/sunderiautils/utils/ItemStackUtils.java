@@ -7,6 +7,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Bukkit;
 
 import java.util.Arrays;
 import java.util.List;
@@ -122,6 +125,10 @@ public class ItemStackUtils {
         List<Material> skulls = Arrays.stream(Material.values()).filter(material -> (!material.name().startsWith("PISTON") && material.name().endsWith("_HEAD") && !material.name().endsWith("_WALL_HEAD")) ||
                 (material.name().endsWith("_SKULL") && !material.name().startsWith("LEGACY") && !material.name().endsWith("_WALL_SKULL"))).toList();
         return skulls.get(SunderiaUtils.getRandom().nextInt(skulls.size()));
+    }
+    
+    public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType){
+        return itemStack.hasItemMeta() ? itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType) : Bukkit.getItemFactory().getItemMeta(itemStack.getType()).getPersistentDataContainer().has(namespacedKey, persistentDataType);
     }
 
     public static boolean hasEnchantment(Enchantment enchantment, ItemStack item) {
