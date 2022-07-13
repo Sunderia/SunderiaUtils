@@ -123,6 +123,10 @@ public class ItemStackUtils {
                 (material.name().endsWith("_SKULL") && !material.name().startsWith("LEGACY") && !material.name().endsWith("_WALL_SKULL"))).toList();
         return skulls.get(SunderiaUtils.getRandom().nextInt(skulls.size()));
     }
+    
+    public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType){
+        return itemStack.hasItemMeta() ? itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType) : Bukkit.getItemFactory().getItemMeta(itemStack.getType()).getPersistentDataContainer().has(namespacedKey, persistentDataType);
+    }
 
     public static boolean hasEnchantment(Enchantment enchantment, ItemStack item) {
         if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
