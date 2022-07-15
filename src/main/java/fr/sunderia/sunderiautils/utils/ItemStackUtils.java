@@ -128,7 +128,7 @@ public class ItemStackUtils {
     }
     
     public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType){
-        return (itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType))
+        return (itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType));
     }
     
     public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack, boolean clone){
