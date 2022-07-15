@@ -140,6 +140,10 @@ public class ItemStackUtils {
         }
         return item;
     }
+    
+    public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack){
+        return removeAllPersitentDataContainer(itemStack, false);
+    }
 
     public static boolean hasEnchantment(Enchantment enchantment, ItemStack item) {
         if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
