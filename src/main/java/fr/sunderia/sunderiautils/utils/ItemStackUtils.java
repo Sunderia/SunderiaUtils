@@ -132,11 +132,11 @@ public class ItemStackUtils {
     }
     
     public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack, boolean clone){
-        ItemStack item = clone ? itemStack.clone() : itemstack;
+        ItemStack item = clone ? itemStack.clone() : itemStack;
         if(item.hasItemMeta()){
             ItemMeta itemMeta = item.getItemMeta();
-            itemMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
-            item.setItemMeta(ingredientMeta);
+            itemMeta.getPersistentDataContainer().getKeys().forEach(key -> itemMeta.getPersistentDataContainer().remove(key));
+            item.setItemMeta(itemMeta);
         }
         return item;
     }
