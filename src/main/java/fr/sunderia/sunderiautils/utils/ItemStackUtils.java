@@ -130,6 +130,16 @@ public class ItemStackUtils {
     public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType){
         return itemStack.hasItemMeta() ? itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType) : Bukkit.getItemFactory().getItemMeta(itemStack.getType()).getPersistentDataContainer().has(namespacedKey, persistentDataType);
     }
+    
+    public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack, boolean clone){
+        ItemStack item = clone ? itemStack.clone() : itemstack;
+        if(item.hasItemMeta()){
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
+            item.setItemMeta(ingredientMeta);
+        }
+        return item;
+    }
 
     public static boolean hasEnchantment(Enchantment enchantment, ItemStack item) {
         if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
