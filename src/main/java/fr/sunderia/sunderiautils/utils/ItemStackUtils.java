@@ -11,6 +11,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Bukkit;
 
+import java.util.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,9 +29,9 @@ public class ItemStackUtils {
      * @param is The item to check
      * @return {@code true} if the item is an armor
      */
-    public static boolean isAnArmor(ItemStack is) {
-        return is.getType().name().endsWith("_HELMET") || is.getType().name().endsWith("_CHESTPLATE") || is.getType().name().endsWith("_LEGGINGS") ||
-                is.getType().name().endsWith("_BOOTS");
+    public static boolean isAnArmor(ItemStack itemStack) {
+        return itemStack.getType().name().endsWith("_HELMET") || itemStack.getType().name().endsWith("_CHESTPLATE") || itemStack.getType().name().endsWith("_LEGGINGS") ||
+                itemStack.getType().name().endsWith("_BOOTS");
     }
 
     /**
@@ -38,9 +39,9 @@ public class ItemStackUtils {
      * @param mat The material to check
      * @return {@code true} if the material is a tool or a weapon.
      */
-    public static boolean isToolOrWeapon(Material mat) {
-        return mat.name().endsWith("_SWORD") || mat.name().endsWith("_PICKAXE") || mat.name().endsWith("_AXE") || mat.name().endsWith("_HOE") ||
-                mat.name().endsWith("_SHOVEL");
+    public static boolean isToolOrWeapon(Material material) {
+        return material.name().endsWith("_SWORD") || material.name().endsWith("_PICKAXE") || material.name().endsWith("_AXE") || material.name().endsWith("_HOE") ||
+                material.name().endsWith("_SHOVEL");
     }
 
     /**
@@ -66,9 +67,9 @@ public class ItemStackUtils {
      * @return {@code true} if the itemStack is a custom item
      */
     public static boolean isCustomItem(ItemStack itemStack) {
-        if(!hasLore(item)) return false;
-        ItemMeta im = item.getItemMeta();
-        String lore = im.getLore().get(im.getLore().size() - 1);
+        if(!hasLore(itemStack)) return false;
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        String lore = itemMeta.getLore().get(itemMeta.getLore().size() - 1);
         return ChatColor.stripColor(lore).startsWith(SunderiaUtils.getPlugin().getName().toLowerCase() + ":");
     }
 
@@ -92,8 +93,8 @@ public class ItemStackUtils {
      * @param item The item to check
      * @return {@code true} if the item is an air or null
      */
-    public static boolean isAirOrNull(ItemStack item){
-        return item == null || item.getType().isAir();
+    public static boolean isAirOrNull(ItemStack itemStack){
+        return itemStack == null || itemStack.getType().isAir();
     }
 
     /**
@@ -101,16 +102,16 @@ public class ItemStackUtils {
      * @return {@code true} if the item is not null and not air.
      * @see #isAirOrNull(ItemStack)
      */
-    public static boolean isNotAirNorNull(ItemStack is) {
-        return !isAirOrNull(is);
+    public static boolean isNotAirNorNull(ItemStack itemStack) {
+        return !isAirOrNull(itemStack);
     }
 
     /**
      * @param is The item to check
      * @return {@code true} if the item has lore
      */
-    public static boolean hasLore(ItemStack is) {
-        return !isAirOrNull(is) && is.hasItemMeta() && is.getItemMeta().hasLore();
+    public static boolean hasLore(ItemStack itemStack) {
+        return !isAirOrNull(itemStack) && itemStack.hasItemMeta() && itemStack.getItemMeta().hasLore();
     }
 
     /**
