@@ -44,9 +44,9 @@ public class ItemStackUtils {
     }
 
     /**
-     * This method check if both item are the same.
-     * @param first The first item
-     * @param second The second item
+     * @param first The first itemStack
+     * @param second The second itemStack
+     * @return {@code true} if the two itemStack are the same
      * @see #isSameItem(ItemStack, ItemStack)
      */
     public static boolean isSimilar(ItemStack first, ItemStack second) {
@@ -61,7 +61,11 @@ public class ItemStackUtils {
         return first.isSimilar(second);
     }
 
-    public static boolean isCustomItem(ItemStack item) {
+    /**
+     * @param itemStack the itemStack
+     * @return {@code true} if the itemStack is a custom item
+     */
+    public static boolean isCustomItem(ItemStack itemStack) {
         if(!hasLore(item)) return false;
         ItemMeta im = item.getItemMeta();
         String lore = im.getLore().get(im.getLore().size() - 1);
@@ -127,10 +131,19 @@ public class ItemStackUtils {
         return skulls.get(SunderiaUtils.getRandom().nextInt(skulls.size()));
     }
     
+    /**
+     * @param itemStack the itemStack
+     * @return {@code true} if the itemStack has the namespacedKey with the right persistentDataType
+     */
     public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType){
         return (itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType));
     }
     
+    /**
+     * @param itemStack the itemStack
+     * @param clone if the itemStack should be cloned or not
+     * @return the same itemStack (cloned or not) but without all his PersitentDataContainer
+     */
     public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack, boolean clone){
         ItemStack item = clone ? itemStack.clone() : itemStack;
         if(item.hasItemMeta()){
@@ -141,11 +154,43 @@ public class ItemStackUtils {
         return item;
     }
     
+    /**
+     * @param itemStack the itemStack
+     * @return the same itemStack but without all his PersitentDataContainer
+     */
     public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack){
         return removeAllPersitentDataContainer(itemStack, false);
     }
+    
+    /**
+     * @param itemStack the itemStack
+     * @param clone if the itemStack should be cloned or not
+     * @return the same itemStack (cloned or not) but without all his lore
+     */
+    public static ItemStack removeAllLore(ItemStack itemStack, boolean clone){
+        ItemStack item = clone ? itemStack.clone() : itemStack;
+        if(item.hasItemMeta() && !item.getItemMeta().getLore().isEmpty()){
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.setLore(new ArrayList<>());
+            item.setItemMeta(itemMeta);
+        }
+        return item;
+    }
+    
+    /**
+     * @param itemStack the itemStack
+     * @return the same itemStack but without all his PersitentDataContainer
+     */
+    public static ItemStack removeAllLore(ItemStack itemStack){
+        return removeAllLore(itemStack, false);
+    }
 
-    public static boolean hasEnchantment(Enchantment enchantment, ItemStack item) {
+    /**
+     * @param enchantment the enchantment
+     * @param itemStack the itemStack
+     * @return {@code true} if the itemStack has the enchantment
+     */
+    public static boolean hasEnchantment(Enchantment enchantment, ItemStack itemStack) {
         if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
         return item.getItemMeta().hasEnchant(enchantment);
     }
