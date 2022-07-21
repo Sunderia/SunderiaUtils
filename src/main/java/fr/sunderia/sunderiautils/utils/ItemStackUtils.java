@@ -192,7 +192,7 @@ public class ItemStackUtils {
      * @return {@code true} if the itemStack has the enchantment
      */
     public static boolean hasEnchantment(Enchantment enchantment, ItemStack itemStack) {
-        if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
-        return item.getItemMeta().hasEnchant(enchantment);
+        if(ItemStackUtils.isAirOrNull(itemStack) || !itemStack.hasItemMeta()) return false;
+        return itemStack.getItemMeta().hasEnchant(enchantment);
     }
 }
