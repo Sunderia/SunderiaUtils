@@ -26,7 +26,7 @@ public class ItemStackUtils {
 
     /**
      * This method check if the item is an armor.
-     * @param is The item to check
+     * @param itemStack the itemStack checked
      * @return {@code true} if the item is an armor
      */
     public static boolean isAnArmor(ItemStack itemStack) {
@@ -36,7 +36,7 @@ public class ItemStackUtils {
 
     /**
      * This method check if the iteam is a tool or a weapon.
-     * @param mat The material to check
+     * @param material The material to check
      * @return {@code true} if the material is a tool or a weapon.
      */
     public static boolean isToolOrWeapon(Material material) {
@@ -90,7 +90,7 @@ public class ItemStackUtils {
     }
 
     /**
-     * @param item The item to check
+     * @param itemStack The item to check
      * @return {@code true} if the item is an air or null
      */
     public static boolean isAirOrNull(ItemStack itemStack){
@@ -98,7 +98,7 @@ public class ItemStackUtils {
     }
 
     /**
-     * @param is The item to check
+     * @param itemStack The item to check
      * @return {@code true} if the item is not null and not air.
      * @see #isAirOrNull(ItemStack)
      */
@@ -107,7 +107,7 @@ public class ItemStackUtils {
     }
 
     /**
-     * @param is The item to check
+     * @param itemStack The item to check
      * @return {@code true} if the item has lore
      */
     public static boolean hasLore(ItemStack itemStack) {
