@@ -29,7 +29,10 @@ public class PlayerListener implements Listener {
                     Item item = (Item) entity;
                     if(event.getItemDrop().getItemStack().getType() == Material.AIR) return;
                     Optional<WaterRecipe> recipeFromItems = WaterRecipe.getRecipeFromItems(event.getItemDrop().getItemStack(), item.getItemStack());
-                    if (recipeFromItems.isEmpty()) return;
+                    if (recipeFromItems.isEmpty()) {
+                        recipeFromItems = WaterRecipe.getRecipeFromItems(item.getItemStack(), event.getItemDrop().getItemStack());
+                        if(recipeFromItems.isEmpty()) return;
+                    }
                     int amount = Math.min(event.getItemDrop().getItemStack().getAmount(), item.getItemStack().getAmount());
                     for (int i = 0; i < amount; i++) {
                         baseLoc.getWorld().dropItemNaturally(baseLoc, recipeFromItems.get().getResult());

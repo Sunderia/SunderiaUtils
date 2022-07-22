@@ -28,6 +28,7 @@ public class SunderiaUtils {
 
     private static JavaPlugin plugin;
     private static Random random;
+    private static Random secureRandom;
     private static final Logger LOGGER = LoggerFactory.getLogger(SunderiaUtils.class);
 
     private SunderiaUtils(JavaPlugin plugin) {
@@ -48,10 +49,11 @@ public class SunderiaUtils {
             throw new UnsupportedOperationException("The plugin field is already set. Please call the of method only once.");
         }
         SunderiaUtils.plugin = plugin;
+        random = new Random();
         try {
-            random = SecureRandom.getInstanceStrong();
+            secureRandom = SecureRandom.getInstanceStrong();
         } catch (NoSuchAlgorithmException e) {
-            random = new Random();
+            secureRandom = random;
         }
         return new SunderiaUtils(plugin);
     }
@@ -151,5 +153,12 @@ public class SunderiaUtils {
      */
     public static Random getRandom() {
         return random;
+    }
+
+    /**
+     * @return The instance of {@link SecureRandom}
+     */
+    public static Random getSecureRandom() {
+        return secureRandom;
     }
 }

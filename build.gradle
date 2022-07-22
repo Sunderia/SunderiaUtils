@@ -2,13 +2,14 @@ plugins {
     id 'java'
     id 'maven-publish'
     id "de.undercouch.download" version "5.0.2"
+    id 'com.github.breadmoirai.github-release' version '2.3.7'
 }
 
 apply from: rootProject.file('specialSource.gradle')
 apply from: rootProject.file('buildtools.gradle')
 
 group 'fr.sunderia'
-version '1.5.3-SNAPSHOT'
+version '1.5.4-SNAPSHOT'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -61,6 +62,13 @@ test {
 javadoc {
     options.addBooleanOption('html5', true)
 }
+
+githubRelease {
+    token getProperty('GITHUB_TOKEN')
+    releaseAssets(jar.archiveFile, sourcesJar.archiveFile, javadocJar.archiveFile)
+}
+
+publish.dependsOn(githubRelease)
 
 publishing {
     publications {
