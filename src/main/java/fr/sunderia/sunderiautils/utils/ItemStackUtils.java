@@ -11,6 +11,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Bukkit;
 
+import java.util.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,28 +26,28 @@ public class ItemStackUtils {
 
     /**
      * This method check if the item is an armor.
-     * @param is The item to check
+     * @param itemStack the itemStack checked
      * @return {@code true} if the item is an armor
      */
-    public static boolean isAnArmor(ItemStack is) {
-        return is.getType().name().endsWith("_HELMET") || is.getType().name().endsWith("_CHESTPLATE") || is.getType().name().endsWith("_LEGGINGS") ||
-                is.getType().name().endsWith("_BOOTS");
+    public static boolean isAnArmor(ItemStack itemStack) {
+        return itemStack.getType().name().endsWith("_HELMET") || itemStack.getType().name().endsWith("_CHESTPLATE") || itemStack.getType().name().endsWith("_LEGGINGS") ||
+                itemStack.getType().name().endsWith("_BOOTS");
     }
 
     /**
      * This method check if the iteam is a tool or a weapon.
-     * @param mat The material to check
+     * @param material The material to check
      * @return {@code true} if the material is a tool or a weapon.
      */
-    public static boolean isToolOrWeapon(Material mat) {
-        return mat.name().endsWith("_SWORD") || mat.name().endsWith("_PICKAXE") || mat.name().endsWith("_AXE") || mat.name().endsWith("_HOE") ||
-                mat.name().endsWith("_SHOVEL");
+    public static boolean isToolOrWeapon(Material material) {
+        return material.name().endsWith("_SWORD") || material.name().endsWith("_PICKAXE") || material.name().endsWith("_AXE") || material.name().endsWith("_HOE") ||
+                material.name().endsWith("_SHOVEL");
     }
 
     /**
-     * This method check if both item are the same.
-     * @param first The first item
-     * @param second The second item
+     * @param first The first itemStack
+     * @param second The second itemStack
+     * @return {@code true} if the two itemStack are the same
      * @see #isSameItem(ItemStack, ItemStack)
      */
     public static boolean isSimilar(ItemStack first, ItemStack second) {
@@ -61,10 +62,14 @@ public class ItemStackUtils {
         return first.isSimilar(second);
     }
 
-    public static boolean isCustomItem(ItemStack item) {
-        if(!hasLore(item)) return false;
-        ItemMeta im = item.getItemMeta();
-        String lore = im.getLore().get(im.getLore().size() - 1);
+    /**
+     * @param itemStack the itemStack
+     * @return {@code true} if the itemStack is a custom item
+     */
+    public static boolean isCustomItem(ItemStack itemStack) {
+        if(!hasLore(itemStack)) return false;
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        String lore = itemMeta.getLore().get(itemMeta.getLore().size() - 1);
         return ChatColor.stripColor(lore).startsWith(SunderiaUtils.getPlugin().getName().toLowerCase() + ":");
     }
 
@@ -85,28 +90,28 @@ public class ItemStackUtils {
     }
 
     /**
-     * @param item The item to check
+     * @param itemStack The item to check
      * @return {@code true} if the item is an air or null
      */
-    public static boolean isAirOrNull(ItemStack item){
-        return item == null || item.getType().isAir();
+    public static boolean isAirOrNull(ItemStack itemStack){
+        return itemStack == null || itemStack.getType().isAir();
     }
 
     /**
-     * @param is The item to check
+     * @param itemStack The item to check
      * @return {@code true} if the item is not null and not air.
      * @see #isAirOrNull(ItemStack)
      */
-    public static boolean isNotAirNorNull(ItemStack is) {
-        return !isAirOrNull(is);
+    public static boolean isNotAirNorNull(ItemStack itemStack) {
+        return !isAirOrNull(itemStack);
     }
 
     /**
-     * @param is The item to check
+     * @param itemStack The item to check
      * @return {@code true} if the item has lore
      */
-    public static boolean hasLore(ItemStack is) {
-        return !isAirOrNull(is) && is.hasItemMeta() && is.getItemMeta().hasLore();
+    public static boolean hasLore(ItemStack itemStack) {
+        return !isAirOrNull(itemStack) && itemStack.hasItemMeta() && itemStack.getItemMeta().hasLore();
     }
 
     /**
@@ -127,10 +132,19 @@ public class ItemStackUtils {
         return skulls.get(SunderiaUtils.getRandom().nextInt(skulls.size()));
     }
     
+    /**
+     * @param itemStack the itemStack
+     * @return {@code true} if the itemStack has the namespacedKey with the right persistentDataType
+     */
     public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType){
         return (itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType));
     }
     
+    /**
+     * @param itemStack the itemStack
+     * @param clone if the itemStack should be cloned or not
+     * @return the same itemStack (cloned or not) but without all his PersitentDataContainer
+     */
     public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack, boolean clone){
         ItemStack item = clone ? itemStack.clone() : itemStack;
         if(item.hasItemMeta()){
@@ -141,12 +155,44 @@ public class ItemStackUtils {
         return item;
     }
     
+    /**
+     * @param itemStack the itemStack
+     * @return the same itemStack but without all his PersitentDataContainer
+     */
     public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack){
         return removeAllPersitentDataContainer(itemStack, false);
     }
+    
+    /**
+     * @param itemStack the itemStack
+     * @param clone if the itemStack should be cloned or not
+     * @return the same itemStack (cloned or not) but without all his lore
+     */
+    public static ItemStack removeAllLore(ItemStack itemStack, boolean clone){
+        ItemStack item = clone ? itemStack.clone() : itemStack;
+        if(item.hasItemMeta() && !item.getItemMeta().getLore().isEmpty()){
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.setLore(new ArrayList<>());
+            item.setItemMeta(itemMeta);
+        }
+        return item;
+    }
+    
+    /**
+     * @param itemStack the itemStack
+     * @return the same itemStack but without all his PersitentDataContainer
+     */
+    public static ItemStack removeAllLore(ItemStack itemStack){
+        return removeAllLore(itemStack, false);
+    }
 
-    public static boolean hasEnchantment(Enchantment enchantment, ItemStack item) {
-        if(ItemStackUtils.isAirOrNull(item) || !item.hasItemMeta()) return false;
-        return item.getItemMeta().hasEnchant(enchantment);
+    /**
+     * @param enchantment the enchantment
+     * @param itemStack the itemStack
+     * @return {@code true} if the itemStack has the enchantment
+     */
+    public static boolean hasEnchantment(Enchantment enchantment, ItemStack itemStack) {
+        if(ItemStackUtils.isAirOrNull(itemStack) || !itemStack.hasItemMeta()) return false;
+        return itemStack.getItemMeta().hasEnchant(enchantment);
     }
 }
