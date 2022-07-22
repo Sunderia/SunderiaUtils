@@ -68,7 +68,7 @@ githubRelease {
     releaseAssets(jar.archiveFile, sourcesJar.archiveFile, javadocJar.archiveFile)
 }
 
-publish.dependsOn(githubRelease)
+publish.dependsOn(tasks.getByName('githubRelease'))
 
 publishing {
     publications {
