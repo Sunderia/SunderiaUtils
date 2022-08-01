@@ -30,7 +30,7 @@ public abstract class PluginCommand extends BukkitCommand {
         setDescription(info.description());
         setUsage(info.usage());
         setPermission(info.permission());
-        setPermissionMessage(info.permissionMessage());
+        setPermissionMessage(info.permissionMessageColor() + info.permissionMessage());
     }
 
     /**
