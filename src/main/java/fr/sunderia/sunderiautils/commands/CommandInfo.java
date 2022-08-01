@@ -42,5 +42,10 @@ public @interface CommandInfo {
     /**
      * @return The message sent to the player if he doesn't have the permission to execute the command
      */
-    String permissionMessage() default "§cYou don't have permission to use this command.";
+    String permissionMessage() default "You don't have permission to use this command.";
+    
+    /**
+     * @return The color that will be used for permissionMessage
+     */
+    ChatColor permissionMessageColor() default ChatColor.RED
 }
