@@ -43,7 +43,7 @@ public abstract class PluginCommand extends BukkitCommand {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if(!info.permission().isEmpty() && !sender.hasPermission(info.permission())) {
-            sender.sendMessage(ChatColor.RED + info.permissionMessage());
+            sender.sendMessage(info.permissionMessageColor() + info.permissionMessage());
             return true;
         }
         if(info.requiresPlayer()) {
