@@ -30,7 +30,7 @@ public abstract class PluginCommand extends BukkitCommand {
         setDescription(info.description());
         setUsage(info.usage());
         setPermission(info.permission());
-        setPermissionMessage(info.permissionMessageColor() + info.permissionMessage());
+        setPermissionMessage(info.permissionMessage());
     }
 
     /**
@@ -43,7 +43,7 @@ public abstract class PluginCommand extends BukkitCommand {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if(!info.permission().isEmpty() && !sender.hasPermission(info.permission())) {
-            sender.sendMessage(info.permissionMessageColor() + info.permissionMessage());
+            sender.sendMessage(ChatColor.RED + info.permissionMessage());
             return true;
         }
         if(info.requiresPlayer()) {
