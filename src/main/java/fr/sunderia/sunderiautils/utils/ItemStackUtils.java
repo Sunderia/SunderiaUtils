@@ -9,7 +9,10 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,7 +132,7 @@ public class ItemStackUtils {
      */
     public static Material randomSkull() {
         List<Material> skulls = Arrays.stream(Material.values())
-        .filter(material -> 
+        .filter(material ->
             (!material.name().startsWith("PISTON") && material.name().endsWith("_HEAD") && !material.name().endsWith("_WALL_HEAD")) ||
             (material.name().endsWith("_SKULL") && !material.name().startsWith("LEGACY") && !material.name().endsWith("_WALL_SKULL")))
         .toList();
@@ -140,8 +143,8 @@ public class ItemStackUtils {
      * @param itemStack the itemStack
      * @return {@code true} if the itemStack has the namespacedKey with the right persistentDataType
      */
-    public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType) {
-        return (itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType));
+    public static <T, Z> boolean hasPersistentDataContainer(@Nullable ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType){
+        return (itemStack != null && itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType));
     }
 
     /**
@@ -152,7 +155,7 @@ public class ItemStackUtils {
     public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, String key, PersistentDataType<T, Z> persistentDataType) {
         return hasPersistentDataContainer(itemStack, SunderiaUtils.key(key), persistentDataType);
     }
-    
+
     /**
      * @param itemStack the itemStack
      * @param clone if the itemStack should be cloned or not
