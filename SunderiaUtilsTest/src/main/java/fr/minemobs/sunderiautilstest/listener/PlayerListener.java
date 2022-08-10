@@ -5,7 +5,7 @@ import fr.minemobs.sunderiautilstest.TestPlugin;
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.customblock.CustomBlock;
 import fr.sunderia.sunderiautils.enchantments.CustomEnchantment;
-import fr.sunderia.sunderiautils.utils.InventoryBuilder;
+import fr.sunderia.sunderiautils.utils.DepInventoryBuilder;
 import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -47,7 +47,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
         if(event.getMessage().equalsIgnoreCase("/test")) {
-            event.getPlayer().openInventory(new InventoryBuilder("Something", new InventoryBuilder.Shape(
+            event.getPlayer().openInventory(new DepInventoryBuilder("Something", new DepInventoryBuilder.Shape(
                     """
                     AAAABAAAA
                     A   B   A

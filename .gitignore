@@ -1,6 +1,11 @@
 /.gradle/
 /.idea/
+/.settings/
+/.vscode/
+/bin/
 /build/
 /SunderiaUtilsTest/build/
 /SunderiaUtilsTest/debug/
 /src/test/java/
+.project
+/SunderiaUtilsTest/bin/

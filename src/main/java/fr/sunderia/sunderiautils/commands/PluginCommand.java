@@ -8,10 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-
 import java.util.Objects;
 import java.util.Optional;
 
+@SuppressWarnings("unused")
 public abstract class PluginCommand extends BukkitCommand {
     private final CommandInfo info;
     protected final JavaPlugin plugin;
@@ -43,7 +43,7 @@ public abstract class PluginCommand extends BukkitCommand {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if(!info.permission().isEmpty() && !sender.hasPermission(info.permission())) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+            sender.sendMessage(info.permissionMessage());
             return true;
         }
         if(info.requiresPlayer()) {

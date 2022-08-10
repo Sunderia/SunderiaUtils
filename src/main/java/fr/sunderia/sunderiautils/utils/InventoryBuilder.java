@@ -1,14 +1,10 @@
 package fr.sunderia.sunderiautils.utils;
 
+import com.google.common.collect.Lists;
 import fr.sunderia.sunderiautils.SunderiaUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,24 +14,57 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class InventoryBuilder implements Listener {
+@SuppressWarnings("unused")
+public class InventoryBuilder {
 
     private final int spacing;
-    private int rows = 3;
+    private int rows;
     private String name;
-    private boolean closed = false;
     private final List<ItemStack> itemStacks;
-    private Consumer<InventoryClickEvent> clickEventConsumer;
-    private Consumer<InventoryOpenEvent> openEventConsumer;
-    private Consumer<InventoryCloseEvent> closeEventConsumer;
-    private Consumer<InventoryEvent> updateEventConsumer;
-    private Consumer<InventoryDragEvent> dragEventConsumer;
-    private BukkitRunnable runnable;
-    //1 Second
-    private int runnableTime = 20;
-    private int runnableDelay = 20;
-    private boolean cancelEvent = false;
+    private final InventoryListeners listeners;
 
+    public static final class InventoryListeners {
+        private int runnableTime = 20;
+        private int runnableDelay = 20;
+        private Consumer<InventoryClickEvent> clickEventConsumer;
+        private Consumer<InventoryOpenEvent> openEventConsumer;
+        private Consumer<InventoryCloseEvent> closeEventConsumer;
+        private Consumer<InventoryEvent> updateEventConsumer;
+        private Consumer<InventoryDragEvent> dragEventConsumer;
+        public boolean disabled = false;
+
+        public int getRunnableTime() {
+            return runnableTime;
+        }
+
+        public int getRunnableDelay() {
+            return runnableDelay;
+        }
+
+        public Consumer<InventoryClickEvent> getClickEventConsumer() {
+            return clickEventConsumer;
+        }
+
+        public Consumer<InventoryOpenEvent> getOpenEventConsumer() {
+            return openEventConsumer;
+        }
+
+        public Consumer<InventoryCloseEvent> getCloseEventConsumer() {
+            return closeEventConsumer;
+        }
+
+        public Consumer<InventoryEvent> getUpdateEventConsumer() {
+            return updateEventConsumer;
+        }
+
+        public Consumer<InventoryDragEvent> getDragEventConsumer() {
+            return dragEventConsumer;
+        }
+
+        public boolean atLeastOneNotNull() {
+            return clickEventConsumer != null || this.closeEventConsumer != null || this.dragEventConsumer != null || this.updateEventConsumer != null || this.openEventConsumer != null;
+        }
+    }
 
     public static class Shape {
         private final String shape;
@@ -44,7 +73,7 @@ public class InventoryBuilder implements Listener {
 
         public Shape(String shape, Map<Character, ItemStack> itemMap) {
             this.shape = shape;
-            if(shape.lines().anyMatch(line -> line.length() != 9)) {
+            if(shape.lines().map(line -> line.isEmpty() ? " ".repeat(9) : line).anyMatch(line -> line.length() != 9)) {
                 throw new IllegalArgumentException("Shape must be 9 characters long");
             }
             this.itemMap = itemMap;
@@ -64,36 +93,20 @@ public class InventoryBuilder implements Listener {
         }
     }
 
-    /**
-     * @param name The name of the inventory
-     */
     public InventoryBuilder(@NotNull String name) {
-        this.name = name;
-        this.itemStacks = new ArrayList<>();
-        this.spacing = 0;
+        this(name, 9, 0);
     }
 
-    /**
-     * @param name The name of the inventory
-     * @param rows The number of rows
-     */
     public InventoryBuilder(@NotNull String name, int rows) {
-        this.name = name;
-        this.itemStacks = new ArrayList<>();
-        this.setRows(rows);
-        this.spacing = 0;
+        this(name, rows, 0);
     }
 
-    /**
-     * @param name The name of the inventory
-     * @param rows The number of rows
-     * @param spacing The spacing between items
-     */
     public InventoryBuilder(@NotNull String name, int rows, int spacing) {
         this.name = name;
-        this.itemStacks = new ArrayList<>(rows * 9);
-        this.setRows(rows);
+        this.itemStacks = Lists.newArrayList();
+        this.rows = rows;
         this.spacing = spacing;
+        this.listeners = new InventoryListeners();
     }
 
     public InventoryBuilder(@NotNull String name, @NotNull Shape shape) {
@@ -114,33 +127,21 @@ public class InventoryBuilder implements Listener {
             }
         });
         this.itemStacks = Arrays.asList(is);
+        this.listeners = new InventoryListeners();
     }
 
-    /**
-     * @param eventConsumer A consumer containing the event
-     * @return The builder
-     */
-    public InventoryBuilder onOpen(Consumer<InventoryOpenEvent> eventConsumer) {
-        this.openEventConsumer = eventConsumer;
+    public InventoryBuilder onOpen(@NotNull Consumer<InventoryOpenEvent> consumer) {
+        listeners.openEventConsumer = consumer;
         return this;
     }
 
-    /**
-     * @param eventConsumer A consumer containing the event
-     * The event will be called when the inventory is closed
-     * @return The builder
-     */
-    public InventoryBuilder onClose(Consumer<InventoryCloseEvent> eventConsumer) {
-        this.closeEventConsumer = eventConsumer;
+    public InventoryBuilder onClose(@NotNull Consumer<InventoryCloseEvent> consumer) {
+        listeners.closeEventConsumer = consumer;
         return this;
     }
 
-    /**
-     * @param eventConsumer A consumer containing the event
-     * @return The builder
-     */
-    public InventoryBuilder onClick(Consumer<InventoryClickEvent> eventConsumer) {
-        this.clickEventConsumer = eventConsumer;
+    public InventoryBuilder onClick(@NotNull Consumer<InventoryClickEvent> consumer) {
+        listeners.clickEventConsumer = consumer;
         return this;
     }
 
@@ -149,7 +150,7 @@ public class InventoryBuilder implements Listener {
      * @return The builder
      */
     public InventoryBuilder onUpdate(Consumer<InventoryEvent> eventConsumer) {
-        return onUpdate(eventConsumer, runnableTime, runnableDelay);
+        return onUpdate(eventConsumer, listeners.runnableTime, listeners.runnableDelay);
     }
 
     /**
@@ -168,152 +169,65 @@ public class InventoryBuilder implements Listener {
      * @return The builder
      */
     public InventoryBuilder onUpdate(Consumer<InventoryEvent> eventConsumer, int delay, int time) {
-        this.updateEventConsumer = eventConsumer;
-        this.runnableTime = time;
-        this.runnableDelay = delay;
-        return this;
-    }
-    
-    public InventoryBuilder onDrag(Consumer<InventoryDragEvent> eventConsumer){
-        this.dragEventConsumer = eventConsumer;
+        listeners.updateEventConsumer = eventConsumer;
+        listeners.runnableTime = time;
+        listeners.runnableDelay = delay;
         return this;
     }
 
-    /**
-     * Cancel the click event if {@link #cancelEvent} is true
-     * @return The builder
-     */
-    public InventoryBuilder setCancelled() {
-        this.cancelEvent = !cancelEvent;
+    public InventoryBuilder onDrag(@NotNull Consumer<InventoryDragEvent> consumer) {
+        listeners.dragEventConsumer = consumer;
         return this;
     }
 
-    @EventHandler
-    private void onClick(InventoryClickEvent event) {
-        if(closed) return;
-        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name)) return;
-        event.setCancelled(cancelEvent);
-        if(clickEventConsumer != null) {
-            clickEventConsumer.accept(event);
-        }
-    }
-
-    @EventHandler
-    private void onOpen(InventoryOpenEvent event) {
-        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name)) return;
-        if (runnable == null && updateEventConsumer != null) {
-            this.runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    updateEventConsumer.accept(event);
-                }
-            };
-            runnable.runTaskTimer(SunderiaUtils.getPlugin(), runnableDelay, runnableTime);
-        }
-        if(openEventConsumer != null) {
-            this.openEventConsumer.accept(event);
-        }
-        //Idk why this is needed but it is
-        event.getInventory().clear();
-        for (int i = 0; i < itemStacks.size(); i++) {
-            event.getInventory().setItem(i, itemStacks.get(i));
-        }
-        closed = false;
-    }
-
-    @EventHandler
-    private void onClose(InventoryCloseEvent event) {
-        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) ||
-                runnable == null) return;
-        this.runnable.cancel();
-        this.runnable = null;
-        if(closeEventConsumer != null) this.closeEventConsumer.accept(event);
-        closed = true;
-    }
-    
-    @EventHandler
-    private void onDrag(InventoryDragEvent event){
-        if (event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name) ||
-                dragEventConsumer == null) return;
-        this.dragEventConsumer.accept(event);
-    }
-
-    /**
-     * @param rows Sets the amount of rows
-     * @return The builder
-     */
     public InventoryBuilder setRows(int rows) {
-        if(rows > 6 || rows < 1) rows = 3;
+        if(rows > 6 || rows < 1) {
+            SunderiaUtils.getPlugin().getLogger().warning("Rows must be between 1 and 6, setting to 3");
+            rows = 3;
+        }
         this.rows = rows;
         return this;
     }
 
-    /**
-     * Add an item to the inventory
-     * @param itemStacks An array of {@link ItemStack}
-     * @return The builder
-     */
-    public InventoryBuilder addItems(ItemStack... itemStacks) {
-        return addItems(spacing, itemStacks);
+    public InventoryBuilder addItems(ItemStack... items) {
+        return addItems(spacing, items);
     }
 
-    /**
-     * Add items to the inventory
-     * @param spacing The spacing between items
-     * @param mat The material of the item
-     * @return The builder
-     */
-    public InventoryBuilder addItems(int spacing, Material mat) {
+    public InventoryBuilder addItems(Material mat) {
         return addItems(spacing, new ItemStack(mat));
     }
 
-    /**
-     * Add items to the inventory
-     * @param spacing The spacing between items
-     * @param itemStacks An array of {@link ItemStack}
-     * @return The builder
-     */
-    public InventoryBuilder addItems(int spacing, ItemStack... itemStacks) {
+    public InventoryBuilder addItems(int spacing, ItemStack... items) {
         List<ItemStack> stacks = new ArrayList<>();
         AtomicInteger i = new AtomicInteger();
         if(spacing > 0) {
-            Arrays.stream(itemStacks).forEach(is -> {
+            Arrays.stream(items).forEach(is -> {
                 if (i.get() != 0 && i.get() % 9 == 0) {
                     stacks.add(null);
                     i.getAndIncrement();
                     return;
                 }
-                stacks.add(itemStacks[i.getAndIncrement()]);
+                stacks.add(items[i.getAndIncrement()]);
                 for (int j = 0; j < spacing; j++) {
                     stacks.add(null);
                 }
             });
         } else {
-            if(itemStacks == null) {
-                stacks.add(null);
-            } else {
-                stacks.addAll(Arrays.asList(itemStacks));
-            }
+            if(items == null) stacks.add(null);
+            else stacks.addAll(Arrays.asList(items));
         }
         this.itemStacks.addAll(stacks);
         return this;
     }
 
-    /**
-     * Add items to the inventory
-     * @param itemStacks A list of {@link ItemStack}
-     * @return The builder
-     */
-    public InventoryBuilder addItems(List<ItemStack> itemStacks) {
-        return addItems(itemStacks.toArray(itemStacks.toArray(new ItemStack[0])));
+    public InventoryBuilder addItems(int spacing, List<ItemStack> itemStacks) {
+        return addItems(spacing, itemStacks.toArray(ItemStack[]::new));
     }
 
-    /**
-     * Add an item to a specific slot in the inventory
-     * @param i The slot
-     * @param stack The item
-     * @return The builder
-     */
+    public InventoryBuilder addItems(List<ItemStack> itemStacks) {
+        return addItems(spacing, itemStacks.toArray(ItemStack[]::new));
+    }
+
     public InventoryBuilder setItem(int i, ItemStack stack) {
         try {
             this.itemStacks.set(i, stack);
@@ -323,29 +237,19 @@ public class InventoryBuilder implements Listener {
         return this;
     }
 
-    /**
-     * @param name The name of the inventory
-     * @return The builder
-     */
     public InventoryBuilder setName(String name) {
         this.name = name;
         return this;
     }
 
-    private int getSize() {
-        return rows * 9;
-    }
-
-    /**
-     * This method will create the inventory and register the events.
-     * @return An {@link Inventory}
-     */
-    public Inventory build() {
-        Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaUtils.getPlugin());
-        Inventory inv = Bukkit.createInventory(null, rows * 9, name);
+    public Gui build() {
+        /* Inventory inv = Bukkit.createInventory(null, rows * 9, name);
         for (int i = 0; i < itemStacks.size(); i++) {
             inv.setItem(i, itemStacks.get(i));
-        }
-        return inv;
+        } */
+
+        Gui gui = new Gui(this.name, this.rows, itemStacks, listeners);
+
+        return gui;
     }
 }

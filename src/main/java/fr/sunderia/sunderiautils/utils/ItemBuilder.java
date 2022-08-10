@@ -13,7 +13,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.NamespacedKey;
 import org.bukkit.util.Consumer;
 
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ import java.util.List;
 public class ItemBuilder implements Listener {
 
     private ItemStack stack;
-    //TODO: Remove identifier and use PDC instead
-    private boolean hideIdentifier = false;
     private Consumer<PlayerInteractEvent> interactConsumer;
 
     /**
@@ -151,15 +148,6 @@ public class ItemBuilder implements Listener {
         return this;
     }
 
-    public ItemBuilder setHideIdentifier(boolean hideIdentifier) {
-        this.hideIdentifier = hideIdentifier;
-        return this;
-    }
-
-    public ItemBuilder hideIdentifier() {
-        return setHideIdentifier(!this.hideIdentifier);
-    }
-
     /**
      * @param displayName The display name of the item
      * @return The ItemBuilder
@@ -172,11 +160,14 @@ public class ItemBuilder implements Listener {
     }
     
     public <T, Z> ItemBuilder addPersistentDataContainer(NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType, Z value) {
-        ItemStack itemStack = this.build();
-        ItemMeta itemMeta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+        ItemMeta itemMeta = getItemMeta();
         itemMeta.getPersistentDataContainer().set(namespacedKey, persistentDataType, value);
-        itemStack.setItemMeta(itemMeta);
-        return new ItemBuilder(itemStack);
+        setItemMeta(itemMeta);
+        return this;
+    }
+
+    public <T, Z> ItemBuilder addPersistentDataContainer(String key, PersistentDataType<T, Z> persistentDataType, Z value) {
+        return addPersistentDataContainer(SunderiaUtils.key(key), persistentDataType, value);
     }
 
     /**
@@ -276,11 +267,11 @@ public class ItemBuilder implements Listener {
      * @throws IllegalStateException If the item does not have a name.
      */
     public ItemStack build() {
-        if((!stack.getItemMeta().hasDisplayName() || stack.getItemMeta().getDisplayName().isEmpty()) && !hideIdentifier) throw new IllegalStateException("The item has no display name!");
+        //if((!stack.getItemMeta().hasDisplayName() || stack.getItemMeta().getDisplayName().isEmpty()) && !hideIdentifier) throw new IllegalStateException("The item has no display name!");
         if(interactConsumer != null) {
             Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaUtils.getPlugin());
         }
-        if(!hideIdentifier) {
+        /*if(!hideIdentifier) {
             ItemMeta meta = getItemMeta();
             List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
             String l = ChatColor.DARK_GRAY + SunderiaUtils.getPlugin().getName().toLowerCase() + ":" +
@@ -289,7 +280,8 @@ public class ItemBuilder implements Listener {
             lore.add(l);
             meta.setLore(lore);
             stack.setItemMeta(meta);
-        }
+        }*/
+        if(getItemMeta().hasDisplayName()) addPersistentDataContainer("identifier", PersistentDataType.STRING, ChatColor.stripColor(getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase()));
         return stack;
     }
 }

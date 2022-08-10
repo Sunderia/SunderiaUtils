@@ -4,13 +4,12 @@ import fr.sunderia.sunderiautils.customblock.CustomBlock;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class CustomBlockPlaceEvent extends BlockPlaceEvent implements Cancellable {
+public class CustomBlockPlaceEvent extends BlockPlaceEvent {
 
     private final CustomBlock customBlock;
 

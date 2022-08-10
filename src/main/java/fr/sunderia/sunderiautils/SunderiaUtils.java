@@ -10,7 +10,6 @@ import fr.sunderia.sunderiautils.listeners.RecipeListener;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -76,7 +75,12 @@ public class SunderiaUtils {
                 .forEach(clazz -> {
                     LOGGER.info("Registering command {}", clazz.getAnnotation(CommandInfo.class).name());
                     PluginCommand command = Objects.requireNonNull((PluginCommand) newInstance(clazz, true));
-                    SimpleCommandMap map = ((CraftServer) plugin.getServer()).getCommandMap();
+                    SimpleCommandMap map = null;
+                    try {
+                        map = (SimpleCommandMap) plugin.getServer().getClass().getMethod("getCommandMap").invoke(plugin.getServer());
+                    } catch (ReflectiveOperationException e) {
+                        LOGGER.error("The method getCommandMap in CraftServer was not found", e);
+                    }
                     map.register(plugin.getDescription().getName(), command);
                 });
     }

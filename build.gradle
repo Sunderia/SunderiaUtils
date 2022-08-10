@@ -9,7 +9,7 @@ apply from: rootProject.file('specialSource.gradle')
 apply from: rootProject.file('buildtools.gradle')
 
 group 'fr.sunderia'
-version '1.5.4-SNAPSHOT'
+version '1.5.5-SNAPSHOT'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -64,11 +64,13 @@ javadoc {
 }
 
 githubRelease {
-    token getProperty('GITHUB_TOKEN')
+    setToken(System.getenv("GITHUB_TOKEN") ?: GITHUB_TOKEN)
     releaseAssets(jar.archiveFile, sourcesJar.archiveFile, javadocJar.archiveFile)
 }
 
-publish.dependsOn(tasks.getByName('githubRelease'))
+if(System.getenv("GITHUB_TOKEN") != null || hasProperty("GITHUB_TOKEN")) {
+    publish.dependsOn(tasks.getByName('githubRelease'))
+}
 
 publishing {
     publications {

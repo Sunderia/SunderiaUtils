@@ -1,20 +1,21 @@
 package fr.sunderia.sunderiautils.utils;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ItemStackUtils {
 
     private ItemStackUtils() {}
@@ -68,9 +69,9 @@ public class ItemStackUtils {
      */
     public static boolean isCustomItem(ItemStack itemStack) {
         if(!hasLore(itemStack)) return false;
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        String lore = itemMeta.getLore().get(itemMeta.getLore().size() - 1);
-        return ChatColor.stripColor(lore).startsWith(SunderiaUtils.getPlugin().getName().toLowerCase() + ":");
+        ItemMeta meta = itemStack.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        return container.has(SunderiaUtils.key("identifier"), PersistentDataType.STRING);
     }
 
     /**
@@ -127,8 +128,11 @@ public class ItemStackUtils {
      * @return A random skull like {@link Material#SKELETON_SKULL}.
      */
     public static Material randomSkull() {
-        List<Material> skulls = Arrays.stream(Material.values()).filter(material -> (!material.name().startsWith("PISTON") && material.name().endsWith("_HEAD") && !material.name().endsWith("_WALL_HEAD")) ||
-                (material.name().endsWith("_SKULL") && !material.name().startsWith("LEGACY") && !material.name().endsWith("_WALL_SKULL"))).toList();
+        List<Material> skulls = Arrays.stream(Material.values())
+        .filter(material -> 
+            (!material.name().startsWith("PISTON") && material.name().endsWith("_HEAD") && !material.name().endsWith("_WALL_HEAD")) ||
+            (material.name().endsWith("_SKULL") && !material.name().startsWith("LEGACY") && !material.name().endsWith("_WALL_SKULL")))
+        .toList();
         return skulls.get(SunderiaUtils.getRandom().nextInt(skulls.size()));
     }
     
@@ -136,8 +140,17 @@ public class ItemStackUtils {
      * @param itemStack the itemStack
      * @return {@code true} if the itemStack has the namespacedKey with the right persistentDataType
      */
-    public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType){
+    public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType) {
         return (itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType));
+    }
+
+    /**
+     * @param itemStack the itemStack
+     * @param key The namespaces defaults to {@link JavaPlugin#getName()}
+     * @return {@code true} if the itemStack has the namespacedKey with the right persistentDataType
+     */
+    public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, String key, PersistentDataType<T, Z> persistentDataType) {
+        return hasPersistentDataContainer(itemStack, SunderiaUtils.key(key), persistentDataType);
     }
     
     /**
