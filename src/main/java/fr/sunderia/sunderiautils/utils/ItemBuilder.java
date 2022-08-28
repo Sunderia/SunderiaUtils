@@ -142,7 +142,7 @@ public class ItemBuilder implements Listener {
      * @return The ItemBuilder
      */
     public ItemBuilder setHead(OfflinePlayer player) {
-        if(!(stack.getItemMeta() instanceof SkullMeta meta) || !meta.hasOwner()) return this;
+        if(!(stack.getItemMeta() instanceof SkullMeta meta)) return this;
         meta.setOwningPlayer(player);
         setItemMeta(meta);
         return this;

@@ -1,5 +1,6 @@
 package fr.sunderia.sunderiautils.utils;
 
+import com.google.common.annotations.Beta;
 import com.google.common.collect.Lists;
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import org.bukkit.Material;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
+@Beta
 public class InventoryBuilder {
 
     private final int spacing;
