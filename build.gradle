@@ -9,7 +9,7 @@ apply from: rootProject.file('specialSource.gradle')
 apply from: rootProject.file('buildtools.gradle')
 
 group 'fr.sunderia'
-version '1.5.5-SNAPSHOT'
+version '1.5.7-SNAPSHOT'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -100,7 +100,7 @@ publishing {
         maven {
             name 'sunderiaRepo'
             def extension = version.toString().endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'
-            url 'https://maven.galaxyfight.fr/' + extension
+            url 'https://maven.thesimpleteam.net/' + extension
             credentials(PasswordCredentials)
             authentication {
                 basic(BasicAuthentication)

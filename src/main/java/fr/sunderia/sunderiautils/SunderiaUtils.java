@@ -58,10 +58,11 @@ public class SunderiaUtils {
     }
 
     /**
-     * Register every commands in the package
+     * Register every command in the package
      * @param packageName The name of the package
      * @throws IOException If it can't read the classes in the package
      */
+    @SuppressWarnings("UnstableApiUsage")
     public static void registerCommands(String packageName) throws IOException {
         if(plugin == null) {
             throw new UnsupportedOperationException("Plugin not found");
@@ -75,22 +76,21 @@ public class SunderiaUtils {
                 .forEach(clazz -> {
                     LOGGER.info("Registering command {}", clazz.getAnnotation(CommandInfo.class).name());
                     PluginCommand command = Objects.requireNonNull((PluginCommand) newInstance(clazz, true));
-                    SimpleCommandMap map = null;
                     try {
-                        map = (SimpleCommandMap) plugin.getServer().getClass().getMethod("getCommandMap").invoke(plugin.getServer());
+                        ((SimpleCommandMap) plugin.getServer().getClass().getMethod("getCommandMap").invoke(plugin.getServer())).register(plugin.getDescription().getName(), command);
                     } catch (ReflectiveOperationException e) {
                         LOGGER.error("The method getCommandMap in CraftServer was not found", e);
                     }
-                    map.register(plugin.getDescription().getName(), command);
                 });
     }
 
     /**
-     * Register every listeners in the package.
+     * Register every listener in the package.
      * It will skip every classes that does not have a constructor with no parameters.
      * @param packageName The name of the package
      * @throws IOException If it can't read the classes in the package
      */
+    @SuppressWarnings("UnstableApiUsage")
     public static void registerListeners(String packageName) throws IOException {
         if(plugin == null) {
             throw new UnsupportedOperationException("Plugin not found");
@@ -162,6 +162,7 @@ public class SunderiaUtils {
     /**
      * @return The instance of {@link SecureRandom}
      */
+    @SuppressWarnings("unused")
     public static Random getSecureRandom() {
         return secureRandom;
     }

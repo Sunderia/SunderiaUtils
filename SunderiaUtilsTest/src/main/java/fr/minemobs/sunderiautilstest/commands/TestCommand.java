@@ -2,7 +2,14 @@ package fr.minemobs.sunderiautilstest.commands;
 
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
+import fr.sunderia.sunderiautils.commands.SubCommand;
+import fr.sunderia.sunderiautils.utils.DepInventoryBuilder;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Map;
 
 @CommandInfo(name = "test")
 public class TestCommand extends PluginCommand {
@@ -15,4 +22,23 @@ public class TestCommand extends PluginCommand {
     public TestCommand(JavaPlugin plugin) {
         super(plugin);
     }
+
+    /**
+     * This method is called when the command is run with the test argument.
+     * You can name your method as you want, but it must have a {@link Player} or a {@link org.bukkit.command.CommandSender} as first argument and a {@code String[]} as second argument.
+     * @param player The player who executed the command.
+     * @param args The arguments of the command.
+     */
+    @SubCommand(name = "test")
+    public void test(Player player, String[] args) {
+        player.openInventory(new DepInventoryBuilder("Something", new DepInventoryBuilder.Shape(
+                """
+                AAAABAAAA
+                A   B   A
+                BBBBBBBBB
+                A   B   A
+                AAAABAAAA
+                """, Map.of('A', new ItemStack(Material.DIAMOND), 'B', new ItemStack(Material.EMERALD)))).build());
+    }
+
 }
