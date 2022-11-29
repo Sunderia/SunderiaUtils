@@ -53,7 +53,7 @@ For more examples, see the [Sunderia Utils Example](https://github.com/Sunderia/
 repositories {
     maven {
         name 'SunderiaRepo'
-        url 'https://maven.galaxyfight.fr/snapshots'
+        url 'https://maven.thesimpleteam.net/snapshots'
     }
 }
 
