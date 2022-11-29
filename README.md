@@ -31,12 +31,11 @@ public class ExampleCommand extends PluginCommand {
     }
 
     /**
-     * The name of the method should be the same as the name of the subcommand.
      * The method should have 2 parameters
      * The first one is the sender, it can be either {@link org.bukkit.entity.Player} or {@link org.bukkit.command.CommandSender} (it depends on the value of {requiresPlayer} in the {@link CommandInfo#requiresPlayer()})
      * The second one is the arguments, it needs to be an array of String.
      **/
-    @SubCommand
+    @SubCommand(name = "test")
     public void test(Player player, String[] args) {
         player.sendMessage("Test sub command");
     }
@@ -54,7 +53,7 @@ For more examples, see the [Sunderia Utils Example](https://github.com/Sunderia/
 repositories {
     maven {
         name 'SunderiaRepo'
-        url 'https://maven.galaxyfight.fr/snapshots'
+        url 'https://maven.thesimpleteam.net/snapshots'
     }
 }
 
