@@ -184,7 +184,7 @@ public class InventoryBuilder {
 
     public InventoryBuilder setRows(int rows) {
         if(rows > 6 || rows < 1) {
-            SunderiaUtils.getPlugin().getLogger().warning("Rows must be between 1 and 6, setting to 3");
+            SunderiaUtils.LOGGER.warn("Rows must be between 1 and 6, setting to 3");
             rows = 3;
         }
         this.rows = rows;

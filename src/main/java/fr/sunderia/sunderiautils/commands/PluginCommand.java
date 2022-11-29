@@ -8,6 +8,7 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -49,15 +50,16 @@ public abstract class PluginCommand extends BukkitCommand {
     }
 
     /**
-     * @return The annotation of this command.
+     * @return The annotation of this command. It may be null if the command has been built using the {@link CommandBuilder}
      */
+    @Nullable
     public CommandInfo getInfo() {
         return info;
     }
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-        if(!getPermission().isEmpty() && !sender.hasPermission(info.permission())) {
+        if(!getPermission().isEmpty() && !sender.hasPermission(getPermission())) {
             sender.sendMessage(getPermissionMessage());
             return true;
         }
@@ -77,7 +79,6 @@ public abstract class PluginCommand extends BukkitCommand {
 
     private void callSubCommands(CommandSender sender, String[] args) {
         for (Method method : getClass().getDeclaredMethods()) {
-            SunderiaUtils.getPlugin().getLogger().info("Method: " + method.getName());
             if(method.getParameterCount() != 2 || !CommandSender.class.isAssignableFrom(method.getParameterTypes()[0]) || !String[].class.isAssignableFrom(method.getParameterTypes()[1])) continue;
             if(!method.getParameterTypes()[0].isAssignableFrom(sender.getClass())) continue;
             SubCommand subCommand = method.getAnnotation(SubCommand.class);
