@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Deprecated
 public class DepInventoryBuilder implements Listener {
@@ -44,12 +45,10 @@ public class DepInventoryBuilder implements Listener {
         private final Map<Character, ItemStack> itemMap;
 
         public Shape(String shape, Map<Character, ItemStack> itemMap) {
-            this.shape = shape;
-            if(shape.lines().anyMatch(line -> line.length() != 9)) {
-                throw new IllegalArgumentException("Shape must be 9 characters long");
-            }
+            this.shape = shape.lines().map(s -> s.isEmpty() ? " ".repeat(9) : s).collect(Collectors.joining("\n"));
+            if(this.shape.lines().anyMatch(line -> line.length() != 9)) throw new IllegalArgumentException("Shape must be 9 characters long");
             this.itemMap = itemMap;
-            this.rows = (int) shape.lines().count();
+            this.rows = (int) this.shape.lines().count();
         }
 
         public String getShape() {

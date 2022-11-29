@@ -36,6 +36,18 @@ public abstract class PluginCommand extends BukkitCommand {
         setPermissionMessage(info.permissionMessage());
     }
 
+    PluginCommand(JavaPlugin plugin, String name, String[] aliases, String description, String usage, String permission, String permissionMessage) {
+        super("");
+        this.plugin = plugin;
+        setName(name);
+        setAliases(Arrays.asList(aliases));
+        setDescription(description);
+        setUsage(usage);
+        setPermission(permission);
+        setPermissionMessage(permissionMessage);
+        this.info = null;
+    }
+
     /**
      * @return The annotation of this command.
      */
@@ -45,11 +57,11 @@ public abstract class PluginCommand extends BukkitCommand {
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-        if(!info.permission().isEmpty() && !sender.hasPermission(info.permission())) {
-            sender.sendMessage(info.permissionMessage());
+        if(!getPermission().isEmpty() && !sender.hasPermission(info.permission())) {
+            sender.sendMessage(getPermissionMessage());
             return true;
         }
-        if(info.requiresPlayer()) {
+        if(info == null || info.requiresPlayer()) {
             if(!(sender instanceof Player player)) {
                 sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
             } else {

@@ -1,7 +1,6 @@
 package fr.sunderia.sunderiautils;
 
 import com.google.common.reflect.ClassPath;
-import com.jeff_media.armorequipevent.ArmorEquipEvent;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
 import fr.sunderia.sunderiautils.listeners.CustomBlockListener;
@@ -34,7 +33,6 @@ public class SunderiaUtils {
         Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), plugin);
         Bukkit.getPluginManager().registerEvents(new CustomBlockListener(), plugin);
-        ArmorEquipEvent.registerListener(plugin);
     }
 
     /**
@@ -76,12 +74,20 @@ public class SunderiaUtils {
                 .forEach(clazz -> {
                     LOGGER.info("Registering command {}", clazz.getAnnotation(CommandInfo.class).name());
                     PluginCommand command = Objects.requireNonNull((PluginCommand) newInstance(clazz, true));
-                    try {
-                        ((SimpleCommandMap) plugin.getServer().getClass().getMethod("getCommandMap").invoke(plugin.getServer())).register(plugin.getDescription().getName(), command);
-                    } catch (ReflectiveOperationException e) {
-                        LOGGER.error("The method getCommandMap in CraftServer was not found", e);
-                    }
+                    registerSingleCommand(command);
                 });
+    }
+
+    public static void registerCommand(PluginCommand command) {
+        registerSingleCommand(command);
+    }
+
+    private static void registerSingleCommand(PluginCommand command) {
+        try {
+            ((SimpleCommandMap) plugin.getServer().getClass().getMethod("getCommandMap").invoke(plugin.getServer())).register(plugin.getDescription().getName(), command);
+        } catch (ReflectiveOperationException e) {
+            LOGGER.error("The method getCommandMap in CraftServer was not found", e);
+        }
     }
 
     /**
