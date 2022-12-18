@@ -5,6 +5,8 @@ Utility classes
 
 ## Example
 
+##### Basic Plugin:
+
 ```java
 public class ExamplePlugin extends JavaPlugin {
     
@@ -13,10 +15,13 @@ public class ExamplePlugin extends JavaPlugin {
         SunderiaUtils.of(this);
         //Register commands
         SunderiaUtils.registerCommands("com.example.commands");
+        //Register listeners
+        SunderiaUtils.registerListeners("com.example.listeners");
     }
 }
 ```
 
+##### Basic Command
 ```java
 @CommandInfo(name = "example", permission = "example.command", usage = "/example <player>", description = "Example command")
 public class ExampleCommand extends PluginCommand {
@@ -42,6 +47,28 @@ public class ExampleCommand extends PluginCommand {
 }
 ```
 
+##### Basic Inventory
+```java
+public class Inventories {
+    public void openInventory(Player player) {
+        new InventoryBuilder("Something", new InventoryBuilder.Shape(
+                """
+                AAAABAAAA
+                
+                BBBBBBBBB
+                
+                AAAABAAAA
+                """,
+                Map.of('A', new ItemStack(Material.DIAMOND), 'B', new ItemStack(Material.EMERALD))))
+                .onClick((e, gui) -> {
+                    e.setCancelled(true);
+                    int i = e.getSlot();
+                    gui.setItem(slot, Material.AIR);
+                }).build().openInventory(player);
+    }
+}
+```
+
 For more examples, see the [Sunderia Utils Example](https://github.com/Sunderia/SunderiaUtils/tree/main/SunderiaUtilsTest/src/main/java/fr/minemobs/sunderiautilstest).
 
 ---
@@ -59,7 +86,7 @@ repositories {
 
 dependencies {
     //...
-    implementation 'fr.sunderia:SunderiaUtils:1.5-SNAPSHOT'
+    implementation 'fr.sunderia:SunderiaUtils:1.6.1-SNAPSHOT'
 }
 
 ```

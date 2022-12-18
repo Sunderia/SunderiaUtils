@@ -3,7 +3,6 @@ package fr.minemobs.sunderiautilstest.commands;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
 import fr.sunderia.sunderiautils.commands.SubCommand;
-import fr.sunderia.sunderiautils.listeners.InventoryListener;
 import fr.sunderia.sunderiautils.utils.*;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
