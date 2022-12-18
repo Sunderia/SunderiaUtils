@@ -4,6 +4,7 @@ import com.google.common.reflect.ClassPath;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
 import fr.sunderia.sunderiautils.listeners.CustomBlockListener;
+import fr.sunderia.sunderiautils.listeners.InventoryListener;
 import fr.sunderia.sunderiautils.listeners.PlayerListener;
 import fr.sunderia.sunderiautils.listeners.RecipeListener;
 import org.bukkit.Bukkit;
@@ -27,12 +28,13 @@ public class SunderiaUtils {
     private static JavaPlugin plugin;
     private static Random random;
     private static Random secureRandom;
-    public static final Logger LOGGER = LoggerFactory.getLogger(SunderiaUtils.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger("[SunderiaUtils]");
 
     private SunderiaUtils(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), plugin);
         Bukkit.getPluginManager().registerEvents(new CustomBlockListener(), plugin);
+        Bukkit.getPluginManager().registerEvents(new InventoryListener(), plugin);
     }
 
     /**
@@ -41,6 +43,7 @@ public class SunderiaUtils {
      * @param plugin Your plugin
      * @return An instance of {@link SunderiaUtils}
      */
+    @SuppressWarnings("InstantiationOfUtilityClass")
     public static SunderiaUtils of(JavaPlugin plugin) {
         if(SunderiaUtils.plugin != null) {
             throw new UnsupportedOperationException("The plugin field is already set. Please call the of method only once.");

@@ -6,7 +6,7 @@ import fr.sunderia.sunderiautils.commands.CommandBuilder;
 import fr.sunderia.sunderiautils.recipes.AnvilCrushRecipe;
 import fr.sunderia.sunderiautils.recipes.AnvilRecipe;
 import fr.sunderia.sunderiautils.recipes.WaterRecipe;
-import fr.sunderia.sunderiautils.utils.DepInventoryBuilder;
+import fr.sunderia.sunderiautils.utils.InventoryBuilder;
 import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -43,14 +43,14 @@ public class TestPlugin extends JavaPlugin implements PluginMessageListener {
                 Material.COAL, Material.IRON_INGOT, new ItemBuilder(Material.DIAMOND).setDisplayName("Botania").build());
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "sunderiaclient:packet", this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "sunderiaclient:packet");
-        new CommandBuilder("hi").setFunction((player, args) -> player.openInventory(new DepInventoryBuilder("Something", new DepInventoryBuilder.Shape(
+        new CommandBuilder("hi").setFunction((player, args) -> new InventoryBuilder("Something", new InventoryBuilder.Shape(
                 """
                 AAAABAAAA
                 
                 BBBBBBBBB
                 
                 AAAABAAAA
-                """, Map.of('A', new ItemStack(Material.DIAMOND), 'B', new ItemStack(Material.EMERALD)))).build())).build();
+                """, Map.of('A', new ItemStack(Material.DIAMOND), 'B', new ItemStack(Material.EMERALD)))).build().openInventory(player)).build();
     }
 
     @Override

@@ -6,6 +6,7 @@ import fr.sunderia.sunderiautils.SunderiaUtils;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,14 +27,16 @@ public class InventoryBuilder {
     private final InventoryListeners listeners;
 
     public static final class InventoryListeners {
+        private BukkitTask task;
         private int runnableTime = 20;
         private int runnableDelay = 20;
-        private Consumer<InventoryClickEvent> clickEventConsumer;
-        private Consumer<InventoryOpenEvent> openEventConsumer;
-        private Consumer<InventoryCloseEvent> closeEventConsumer;
+        private Consumer<InventoryClickEvent> clickEventConsumer = (l) -> {};
+        private Consumer<InventoryOpenEvent> openEventConsumer = (l) -> {};
+        private Consumer<InventoryCloseEvent> closeEventConsumer = (l) -> {};
         private Consumer<InventoryEvent> updateEventConsumer;
-        private Consumer<InventoryDragEvent> dragEventConsumer;
-        public boolean disabled = false;
+        private Consumer<InventoryDragEvent> dragEventConsumer = (l) -> {};
+        private Gui inventory;
+        public boolean closed = false;
 
         public int getRunnableTime() {
             return runnableTime;
@@ -61,6 +64,22 @@ public class InventoryBuilder {
 
         public Consumer<InventoryDragEvent> getDragEventConsumer() {
             return dragEventConsumer;
+        }
+
+        private void setInventory(Gui inventory) {
+            this.inventory = inventory;
+        }
+
+        private Gui getInventory() {
+            return inventory;
+        }
+
+        public BukkitTask getTask() {
+            return task;
+        }
+
+        public void setTask(BukkitTask task) {
+            this.task = task;
         }
 
         public boolean atLeastOneNotNull() {
@@ -251,6 +270,7 @@ public class InventoryBuilder {
         } */
 
         Gui gui = new Gui(this.name, this.rows, itemStacks, listeners);
+        listeners.setInventory(gui);
 
         return gui;
     }

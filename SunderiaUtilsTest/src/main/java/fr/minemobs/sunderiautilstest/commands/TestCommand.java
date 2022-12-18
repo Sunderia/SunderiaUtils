@@ -3,7 +3,7 @@ package fr.minemobs.sunderiautilstest.commands;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
 import fr.sunderia.sunderiautils.commands.SubCommand;
-import fr.sunderia.sunderiautils.utils.DepInventoryBuilder;
+import fr.sunderia.sunderiautils.utils.InventoryBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,14 +31,15 @@ public class TestCommand extends PluginCommand {
      */
     @SubCommand(name = "test")
     public void test(Player player, String[] args) {
-        player.openInventory(new DepInventoryBuilder("Something", new DepInventoryBuilder.Shape(
+        new InventoryBuilder("Something", new InventoryBuilder.Shape(
                 """
                 AAAABAAAA
                 A   B   A
                 BBBBBBBBB
                 A   B   A
                 AAAABAAAA
-                """, Map.of('A', new ItemStack(Material.DIAMOND), 'B', new ItemStack(Material.EMERALD)))).build());
+                """, Map.of('A', new ItemStack(Material.DIAMOND), 'B', new ItemStack(Material.EMERALD)))).onClick(e -> e.setCancelled(true)).build()
+                .openInventory(player);
     }
 
 }
