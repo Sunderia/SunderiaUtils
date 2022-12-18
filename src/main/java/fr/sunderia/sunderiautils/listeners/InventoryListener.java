@@ -12,10 +12,10 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static fr.sunderia.sunderiautils.utils.InventoryBuilder.InventoryListeners;
+import static java.util.Objects.nonNull;
 
 public final class InventoryListener implements Listener {
 
-    //TODO: I don't think that it would work, but I'll work on it later
     private static final List<InventoryListeners> LISTENERS = new ArrayList<>();
 
     public static void addListener(InventoryListeners listener) {
@@ -27,16 +27,18 @@ public final class InventoryListener implements Listener {
     }
 
     private static Stream<InventoryListeners> getListeners() {
-        return LISTENERS.stream().filter(listener -> listener != null && !listener.closed);
+        return LISTENERS.stream().filter(Objects::nonNull).filter(listener -> !listener.closed);
     }
 
     @EventHandler
     public void onOpen(InventoryOpenEvent event) {
         LISTENERS.forEach(listener -> {
             listener.closed = false;
-            listener.getOpenEventConsumer().accept(event);
-            if(listener.getUpdateEventConsumer() != null) {
-                listener.setTask(Bukkit.getScheduler().runTaskTimer(SunderiaUtils.getPlugin(), () -> listener.getUpdateEventConsumer().accept(event), listener.getRunnableDelay(), listener.getRunnableTime()));
+            listener.getOpenEventConsumer().accept(event, listener.getInventory());
+            if(nonNull(listener.getUpdateEventConsumer())) {
+                listener.setTask(Bukkit.getScheduler().runTaskTimer(SunderiaUtils.getPlugin(),
+                        () -> listener.getUpdateEventConsumer().accept(event, listener.getInventory()),
+                        listener.getRunnableDelay(), listener.getRunnableTime()));
             }
         });
     }
@@ -45,21 +47,17 @@ public final class InventoryListener implements Listener {
     public void onClose(InventoryCloseEvent event) {
         LISTENERS.forEach(listener -> {
             listener.closed = true;
-            listener.getCloseEventConsumer().accept(event);
+            listener.getCloseEventConsumer().accept(event, listener.getInventory());
         });
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        getListeners().forEach(listener -> listener.getClickEventConsumer().accept(event));
-    }
-
-    public void tick(InventoryEvent inventory) {
-        getListeners().map(InventoryListeners::getUpdateEventConsumer).filter(Objects::nonNull).forEach(consumer -> consumer.accept(inventory));
+        getListeners().forEach(listener -> listener.getClickEventConsumer().accept(event, listener.getInventory()));
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        getListeners().forEach(listener -> listener.getDragEventConsumer().accept(event));
+        getListeners().forEach(listener -> listener.getDragEventConsumer().accept(event, listener.getInventory()));
     }
 }

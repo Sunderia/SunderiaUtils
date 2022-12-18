@@ -3,6 +3,7 @@ package fr.sunderia.sunderiautils.utils;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.Lists;
 import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.listeners.InventoryListener;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 @SuppressWarnings("unused")
 @Beta
@@ -30,11 +32,11 @@ public class InventoryBuilder {
         private BukkitTask task;
         private int runnableTime = 20;
         private int runnableDelay = 20;
-        private Consumer<InventoryClickEvent> clickEventConsumer = (l) -> {};
-        private Consumer<InventoryOpenEvent> openEventConsumer = (l) -> {};
-        private Consumer<InventoryCloseEvent> closeEventConsumer = (l) -> {};
-        private Consumer<InventoryEvent> updateEventConsumer;
-        private Consumer<InventoryDragEvent> dragEventConsumer = (l) -> {};
+        private BiConsumer<InventoryClickEvent, Gui> clickEventConsumer = (l, gui) -> {};
+        private BiConsumer<InventoryOpenEvent, Gui> openEventConsumer = (l, gui) -> {};
+        private BiConsumer<InventoryCloseEvent, Gui> closeEventConsumer = (e, gui) -> {};
+        private BiConsumer<InventoryEvent, Gui> updateEventConsumer;
+        private BiConsumer<InventoryDragEvent, Gui> dragEventConsumer = (l, gui) -> {};
         private Gui inventory;
         public boolean closed = false;
 
@@ -46,23 +48,23 @@ public class InventoryBuilder {
             return runnableDelay;
         }
 
-        public Consumer<InventoryClickEvent> getClickEventConsumer() {
+        public BiConsumer<InventoryClickEvent, Gui> getClickEventConsumer() {
             return clickEventConsumer;
         }
 
-        public Consumer<InventoryOpenEvent> getOpenEventConsumer() {
+        public BiConsumer<InventoryOpenEvent, Gui> getOpenEventConsumer() {
             return openEventConsumer;
         }
 
-        public Consumer<InventoryCloseEvent> getCloseEventConsumer() {
+        public BiConsumer<InventoryCloseEvent, Gui> getCloseEventConsumer() {
             return closeEventConsumer;
         }
 
-        public Consumer<InventoryEvent> getUpdateEventConsumer() {
+        public BiConsumer<InventoryEvent, Gui> getUpdateEventConsumer() {
             return updateEventConsumer;
         }
 
-        public Consumer<InventoryDragEvent> getDragEventConsumer() {
+        public BiConsumer<InventoryDragEvent, Gui> getDragEventConsumer() {
             return dragEventConsumer;
         }
 
@@ -70,7 +72,7 @@ public class InventoryBuilder {
             this.inventory = inventory;
         }
 
-        private Gui getInventory() {
+        public Gui getInventory() {
             return inventory;
         }
 
@@ -93,10 +95,10 @@ public class InventoryBuilder {
         private final Map<Character, ItemStack> itemMap;
 
         public Shape(String shape, Map<Character, ItemStack> itemMap) {
-            this.shape = shape;
             if(shape.lines().map(line -> line.isEmpty() ? " ".repeat(9) : line).anyMatch(line -> line.length() != 9)) {
                 throw new IllegalArgumentException("Shape must be 9 characters long");
             }
+            this.shape = shape;
             this.itemMap = itemMap;
             this.rows = (int) shape.lines().count();
         }
@@ -136,32 +138,33 @@ public class InventoryBuilder {
         this.spacing = 0;
         String shapeStr = shape.getShape();
         this.rows = shape.getRows();
-        AtomicInteger index = new AtomicInteger(0);
-        shapeStr.lines().forEach(line -> {
-            for(int i = 0; i < line.length(); i++) {
-                char c = line.charAt(i);
+        String[] lines = shapeStr.lines().toArray(String[]::new);
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            for (int j = 0; j < line.length(); j++) {
+                char c = line.charAt(j);
                 if(c == ' ' || shape.getItemMap().get(c) == null) {
-                    is[index.getAndIncrement()] = new ItemStack(Material.AIR);
+                    is[i * 9 + j] = new ItemStack(Material.AIR);
                 } else {
-                    is[index.getAndIncrement()] = shape.getItemMap().get(c);
+                    is[i * 9 + j] = shape.getItemMap().get(c);
                 }
             }
-        });
+        }
         this.itemStacks = Arrays.asList(is);
         this.listeners = new InventoryListeners();
     }
 
-    public InventoryBuilder onOpen(@NotNull Consumer<InventoryOpenEvent> consumer) {
+    public InventoryBuilder onOpen(@NotNull BiConsumer<InventoryOpenEvent, Gui> consumer) {
         listeners.openEventConsumer = consumer;
         return this;
     }
 
-    public InventoryBuilder onClose(@NotNull Consumer<InventoryCloseEvent> consumer) {
+    public InventoryBuilder onClose(@NotNull BiConsumer<InventoryCloseEvent, Gui> consumer) {
         listeners.closeEventConsumer = consumer;
         return this;
     }
 
-    public InventoryBuilder onClick(@NotNull Consumer<InventoryClickEvent> consumer) {
+    public InventoryBuilder onClick(@NotNull BiConsumer<InventoryClickEvent, Gui> consumer) {
         listeners.clickEventConsumer = consumer;
         return this;
     }
@@ -170,7 +173,7 @@ public class InventoryBuilder {
      * @param eventConsumer A consumer containing the event
      * @return The builder
      */
-    public InventoryBuilder onUpdate(Consumer<InventoryEvent> eventConsumer) {
+    public InventoryBuilder onUpdate(BiConsumer<InventoryEvent, Gui> eventConsumer) {
         return onUpdate(eventConsumer, listeners.runnableTime, listeners.runnableDelay);
     }
 
@@ -179,7 +182,7 @@ public class InventoryBuilder {
      * @param time The time in ticks between each update
      * @return The builder
      */
-    public InventoryBuilder onUpdate(Consumer<InventoryEvent> eventConsumer, int time) {
+    public InventoryBuilder onUpdate(BiConsumer<InventoryEvent, Gui> eventConsumer, int time) {
         return onUpdate(eventConsumer, time, time);
     }
 
@@ -189,14 +192,14 @@ public class InventoryBuilder {
      * @param delay The delay in ticks before the first update
      * @return The builder
      */
-    public InventoryBuilder onUpdate(Consumer<InventoryEvent> eventConsumer, int delay, int time) {
+    public InventoryBuilder onUpdate(BiConsumer<InventoryEvent, Gui> eventConsumer, int delay, int time) {
         listeners.updateEventConsumer = eventConsumer;
         listeners.runnableTime = time;
         listeners.runnableDelay = delay;
         return this;
     }
 
-    public InventoryBuilder onDrag(@NotNull Consumer<InventoryDragEvent> consumer) {
+    public InventoryBuilder onDrag(@NotNull BiConsumer<InventoryDragEvent, Gui> consumer) {
         listeners.dragEventConsumer = consumer;
         return this;
     }
@@ -264,11 +267,6 @@ public class InventoryBuilder {
     }
 
     public Gui build() {
-        /* Inventory inv = Bukkit.createInventory(null, rows * 9, name);
-        for (int i = 0; i < itemStacks.size(); i++) {
-            inv.setItem(i, itemStacks.get(i));
-        } */
-
         Gui gui = new Gui(this.name, this.rows, itemStacks, listeners);
         listeners.setInventory(gui);
 

@@ -28,7 +28,7 @@ public class SunderiaUtils {
     private static JavaPlugin plugin;
     private static Random random;
     private static Random secureRandom;
-    public static final Logger LOGGER = LoggerFactory.getLogger("[SunderiaUtils]");
+    public static final Logger LOGGER = LoggerFactory.getLogger("SunderiaUtils");
 
     private SunderiaUtils(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(new RecipeListener(), plugin);

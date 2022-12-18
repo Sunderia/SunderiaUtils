@@ -43,13 +43,13 @@ public class TestPlugin extends JavaPlugin implements PluginMessageListener {
                 Material.COAL, Material.IRON_INGOT, new ItemBuilder(Material.DIAMOND).setDisplayName("Botania").build());
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "sunderiaclient:packet", this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "sunderiaclient:packet");
-        new CommandBuilder("hi").setFunction((player, args) -> new InventoryBuilder("Something", new InventoryBuilder.Shape(
+        new CommandBuilder("hi").setFunction((player, args) -> new InventoryBuilder("Hi", new InventoryBuilder.Shape(
                 """
-                AAAABAAAA
+                ABABABABA
                 
-                BBBBBBBBB
+                BABABABAB
                 
-                AAAABAAAA
+                ABABABABA
                 """, Map.of('A', new ItemStack(Material.DIAMOND), 'B', new ItemStack(Material.EMERALD)))).build().openInventory(player)).build();
     }
 
