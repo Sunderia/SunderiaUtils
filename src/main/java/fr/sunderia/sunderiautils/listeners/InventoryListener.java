@@ -23,7 +23,7 @@ public final class InventoryListener implements Listener {
     }
 
     public static void removeListener(InventoryListeners listener) {
-        LISTENERS.remove(listener);
+        listener.askedForRemoval = true;
     }
 
     private static Stream<InventoryListeners> getListeners() {
@@ -45,10 +45,15 @@ public final class InventoryListener implements Listener {
 
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
-        LISTENERS.forEach(listener -> {
+        for (int i = 0; i < LISTENERS.size(); i++) {
+            InventoryListeners listener = LISTENERS.get(i);
             listener.closed = true;
             listener.getCloseEventConsumer().accept(event, listener.getInventory());
-        });
+            if(listener.askedForRemoval) {
+                LISTENERS.remove(i);
+                i--;
+            }
+        }
     }
 
     @EventHandler

@@ -1,9 +1,12 @@
 package fr.minemobs.sunderiautilstest.commands;
 
+import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
 import fr.sunderia.sunderiautils.commands.SubCommand;
+import fr.sunderia.sunderiautils.listeners.InventoryListener;
 import fr.sunderia.sunderiautils.utils.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -45,13 +48,17 @@ public class TestCommand extends PluginCommand {
                     ItemStack is = e.getCurrentItem();
                     if(ItemStackUtils.isNotAirNorNull(is)) {
                         ReflectionUtils.renameCurrentInv(player, "You clicked on " + StringUtils.capitalizeWord(is.getType().name()));
-                        if(is.getType() == Material.DIAMOND) {
-                            gui.setItem(new ItemStack(Material.EMERALD), slot);
-                        } else {
-                            gui.setItem(new ItemStack(Material.DIAMOND), slot);
-                        }
+                        Bukkit.getScheduler().runTaskLater(SunderiaUtils.getPlugin(), () -> {
+                            if(is.getType() == Material.DIAMOND) {
+                                gui.setItem(new ItemStack(Material.EMERALD), slot);
+                            } else {
+                                gui.setItem(new ItemStack(Material.DIAMOND), slot);
+                            }
+                        }, 1);
                     }
                 })
+                .onClose((e, gui) -> Bukkit.getScheduler().runTaskLater(SunderiaUtils.getPlugin(),
+                        () -> InventoryListener.removeListener(gui.getListener()), 2))
                 .build().openInventory(player);
     }
 

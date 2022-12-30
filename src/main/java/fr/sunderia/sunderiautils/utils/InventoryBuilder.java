@@ -39,6 +39,7 @@ public class InventoryBuilder {
         private BiConsumer<InventoryDragEvent, Gui> dragEventConsumer = (l, gui) -> {};
         private Gui inventory;
         public boolean closed = false;
+        public boolean askedForRemoval = false;
 
         public int getRunnableTime() {
             return runnableTime;
