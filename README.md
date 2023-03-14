@@ -31,7 +31,7 @@ public class ExampleCommand extends PluginCommand {
     }
     
     @Override
-    public void execute(Player sender, String[] args) {
+    public void onCommand(Player sender, String[] args) {
         player.sendMessage("Hello " + getArg(args, 0).orElse("World"));
     }
 
